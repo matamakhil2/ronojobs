@@ -13,7 +13,8 @@ export const AppLogo: React.FC<AppLogoProps> = ({ size = 40, style, containerSty
     <View style={containerStyle}>
       <Image
         source={require('../../assets/logo.png')}
-        style={[{ width: size, height: size, resizeMode: 'contain' }, style]}
+        style={[{ width: size, height: size }, style]}
+        resizeMode="contain"
       />
     </View>
   );
