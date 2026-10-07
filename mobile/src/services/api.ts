@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Job, Application, JobFilters, User, ApplicationStatus } from '../types';
 
-// Default backend API URL. On Android emulator use 10.0.2.2, on web/iOS simulator use localhost
-export const DEFAULT_API_URL = 'http://localhost:5000/api/v1';
+// Production Render backend API URL
+export const DEFAULT_API_URL = 'https://ronojobs-backend.onrender.com/api/v1';
 
 const TOKEN_KEY = '@ronojobs_auth_token';
 const API_URL_KEY = '@ronojobs_api_url';
