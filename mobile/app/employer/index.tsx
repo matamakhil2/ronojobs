@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
+  TextInput,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
@@ -22,6 +23,8 @@ export default function EmployerDashboardScreen() {
   const { user } = useAuth();
 
   const [jobs, setJobs] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'closed'>('all');
   const [stats, setStats] = useState<any>({
     total_jobs: 0,
     active_jobs: 0,
@@ -31,6 +34,24 @@ export default function EmployerDashboardScreen() {
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const filteredJobs = useMemo(() => {
+    let list = jobs;
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      list = list.filter((j) => {
+        const title = j.title?.toLowerCase() || '';
+        const loc = j.location?.toLowerCase() || '';
+        const empType = j.employment_type?.toLowerCase() || '';
+        const expLevel = j.experience_level?.toLowerCase() || '';
+        return title.includes(q) || loc.includes(q) || empType.includes(q) || expLevel.includes(q);
+      });
+    }
+    if (statusFilter !== 'all') {
+      list = list.filter((j) => (j.status || 'open').toLowerCase() === statusFilter);
+    }
+    return list;
+  }, [jobs, searchQuery, statusFilter]);
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -163,30 +184,117 @@ export default function EmployerDashboardScreen() {
           </View>
         </View>
 
+        {/* Search Bar */}
+        <View style={styles.searchSection}>
+          <View style={styles.searchBar}>
+            <Ionicons
+              name="search"
+              size={18}
+              color={searchQuery ? COLORS.primary : COLORS.textSecondary}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search your postings by title, location, type..."
+              placeholderTextColor={COLORS.textMuted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              returnKeyType="search"
+            />
+            {searchQuery ? (
+              <TouchableOpacity
+                onPress={() => setSearchQuery('')}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="close-circle" size={16} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        </View>
+
+        {/* Status Filter Tabs */}
+        <View style={styles.filterChipsRow}>
+          <TouchableOpacity
+            style={[styles.filterChip, statusFilter === 'all' && styles.filterChipActive]}
+            onPress={() => setStatusFilter('all')}
+          >
+            <Text
+              style={[
+                styles.filterChipText,
+                statusFilter === 'all' && styles.filterChipTextActive,
+              ]}
+            >
+              All ({jobs.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterChip, statusFilter === 'open' && styles.filterChipActive]}
+            onPress={() => setStatusFilter('open')}
+          >
+            <Text
+              style={[
+                styles.filterChipText,
+                statusFilter === 'open' && styles.filterChipTextActive,
+              ]}
+            >
+              Active ({jobs.filter((j) => (j.status || 'open').toLowerCase() === 'open').length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterChip, statusFilter === 'closed' && styles.filterChipActive]}
+            onPress={() => setStatusFilter('closed')}
+          >
+            <Text
+              style={[
+                styles.filterChipText,
+                statusFilter === 'closed' && styles.filterChipTextActive,
+              ]}
+            >
+              Closed ({jobs.filter((j) => (j.status || 'open').toLowerCase() === 'closed').length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Section: Posted Jobs */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Your Active Job Postings</Text>
-          <Text style={styles.countText}>{jobs.length} listed</Text>
+          <Text style={styles.sectionTitle}>
+            {searchQuery.trim()
+              ? `Results for "${searchQuery.trim()}"`
+              : 'Your Job Postings'}
+          </Text>
+          <Text style={styles.countText}>{filteredJobs.length} listed</Text>
         </View>
 
         {loading ? (
           <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
-        ) : jobs.length === 0 ? (
+        ) : filteredJobs.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="briefcase-outline" size={48} color={COLORS.textMuted} />
-            <Text style={styles.emptyTitle}>No Jobs Posted Yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Create your first job listing to start receiving candidate applications.
+            <Ionicons name="search-outline" size={48} color={COLORS.textMuted} />
+            <Text style={styles.emptyTitle}>
+              {searchQuery.trim() ? 'No Matching Job Postings' : 'No Jobs Posted Yet'}
             </Text>
-            <TouchableOpacity
-              style={styles.createFirstBtn}
-              onPress={() => router.push('/employer/post-job')}
-            >
-              <Text style={styles.createFirstBtnText}>Create Job Listing</Text>
-            </TouchableOpacity>
+            <Text style={styles.emptySubtitle}>
+              {searchQuery.trim()
+                ? `No postings match "${searchQuery.trim()}". Try clearing search.`
+                : 'Create your first job listing to start receiving candidate applications.'}
+            </Text>
+            {searchQuery.trim() ? (
+              <TouchableOpacity
+                style={styles.createFirstBtn}
+                onPress={() => setSearchQuery('')}
+              >
+                <Text style={styles.createFirstBtnText}>Clear Search</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.createFirstBtn}
+                onPress={() => router.push('/employer/post-job')}
+              >
+                <Text style={styles.createFirstBtnText}>Create Job Listing</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ) : (
-          jobs.map((item, idx) => (
+          filteredJobs.map((item, idx) => (
             <View key={item.id || item.job_id || `employer-job-${idx}`} style={styles.jobItemCard}>
               <View style={styles.jobItemHeader}>
                 <View style={{ flex: 1 }}>
@@ -506,5 +614,50 @@ const styles = StyleSheet.create({
     color: COLORS.textInverse,
     fontWeight: '700',
     fontSize: 14,
+  },
+  searchSection: {
+    marginBottom: SPACING.sm,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: 8,
+    ...SHADOWS.sm,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: COLORS.text,
+  },
+  filterChipsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: SPACING.md,
+  },
+  filterChip: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  filterChipActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  filterChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+  },
+  filterChipTextActive: {
+    color: COLORS.textInverse,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -44,6 +44,7 @@ export default function HomeScreen() {
     try {
       const filters = {
         category: selectedCategory === 'All' ? undefined : selectedCategory,
+        q: searchQuery.trim() || undefined,
       };
       const res = await jobsApi.getJobs(filters);
       setJobs(res.data || []);
@@ -68,6 +69,62 @@ export default function HomeScreen() {
     fetchJobs();
   };
 
+  // Debounced backend fetch when searching
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await jobsApi.getJobs({
+          q,
+          category: selectedCategory === 'All' ? undefined : selectedCategory,
+        });
+        if (res.data && res.data.length > 0) {
+          setJobs((prev) => {
+            const existingIds = new Set(prev.map((j) => j.id));
+            const newItems = res.data.filter((j: any) => !existingIds.has(j.id));
+            return [...prev, ...newItems];
+          });
+        }
+      } catch {
+        // Fallback local filtering handles it seamlessly
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedCategory]);
+
+  // Live client-side filter for instantaneous 60fps search results
+  const filteredJobs = useMemo(() => {
+    let list = jobs;
+    if (selectedCategory && selectedCategory !== 'All') {
+      list = list.filter(
+        (j) => j.category?.toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      list = list.filter((j) => {
+        const title = j.title?.toLowerCase() || '';
+        const company = j.company_name?.toLowerCase() || '';
+        const location = j.location?.toLowerCase() || '';
+        const empType = j.employment_type?.toLowerCase() || '';
+        const skills = Array.isArray(j.skills) ? j.skills.join(' ').toLowerCase() : '';
+        const desc = j.description?.toLowerCase() || '';
+        return (
+          title.includes(q) ||
+          company.includes(q) ||
+          location.includes(q) ||
+          empType.includes(q) ||
+          skills.includes(q) ||
+          desc.includes(q)
+        );
+      });
+    }
+    return list;
+  }, [jobs, selectedCategory, searchQuery]);
+
   const handleToggleSave = async (jobId: string, currentlySaved?: boolean) => {
     // Optimistic UI update
     setJobs((prev) =>
@@ -85,7 +142,8 @@ export default function HomeScreen() {
   };
 
   const handleSearchSubmit = () => {
-    if (searchQuery.trim()) {
+    // Search is applied live; if user taps keyboard search action, optionally navigate to dedicated search tab
+    if (searchQuery.trim() && filteredJobs.length === 0) {
       router.push({
         pathname: '/(tabs)/search',
         params: { q: searchQuery.trim() },
@@ -130,7 +188,7 @@ export default function HomeScreen() {
         {/* Search Bar Input */}
         <View style={styles.searchSection}>
           <View style={styles.searchBar}>
-            <Ionicons name="search" size={20} color={COLORS.textSecondary} />
+            <Ionicons name="search" size={20} color={searchQuery ? COLORS.primary : COLORS.textSecondary} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search by job title, skills, keyword..."
@@ -141,7 +199,10 @@ export default function HomeScreen() {
               returnKeyType="search"
             />
             {searchQuery ? (
-              <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <TouchableOpacity
+                onPress={() => setSearchQuery('')}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
                 <Ionicons name="close-circle" size={18} color={COLORS.textMuted} />
               </TouchableOpacity>
             ) : null}
@@ -159,6 +220,18 @@ export default function HomeScreen() {
             <Ionicons name="options-outline" size={20} color={COLORS.textInverse} />
           </TouchableOpacity>
         </View>
+
+        {/* Active Search Indicator */}
+        {searchQuery.trim() ? (
+          <View style={styles.searchStatusRow}>
+            <Text style={styles.searchStatusText}>
+              Found <Text style={{ fontWeight: '700', color: COLORS.primary }}>{filteredJobs.length}</Text> jobs matching "{searchQuery.trim()}"
+            </Text>
+            <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
+              <Text style={styles.clearSearchLink}>Clear</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
 
         {/* Categories Carousel */}
         <View style={styles.section}>
@@ -203,21 +276,37 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>
-              {selectedCategory === 'All' ? 'Featured & Recent Jobs' : `${selectedCategory} Jobs`}
+              {searchQuery.trim()
+                ? `Results for "${searchQuery.trim()}"`
+                : selectedCategory === 'All'
+                ? 'Featured & Recent Jobs'
+                : `${selectedCategory} Jobs`}
             </Text>
-            <Text style={styles.jobCountText}>{jobs.length} open</Text>
+            <Text style={styles.jobCountText}>{filteredJobs.length} open</Text>
           </View>
 
           {loading ? (
             <ActivityIndicator size="large" color={COLORS.primary} style={{ marginVertical: 32 }} />
-          ) : jobs.length === 0 ? (
+          ) : filteredJobs.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="briefcase-outline" size={48} color={COLORS.textMuted} />
-              <Text style={styles.emptyTitle}>No jobs found</Text>
-              <Text style={styles.emptySubtitle}>Try changing category or clearing filters</Text>
+              <Ionicons name="search-outline" size={48} color={COLORS.textMuted} />
+              <Text style={styles.emptyTitle}>No matching jobs found</Text>
+              <Text style={styles.emptySubtitle}>
+                {searchQuery.trim()
+                  ? `No jobs match "${searchQuery.trim()}". Try different keywords or clear your search.`
+                  : 'Try changing category or clearing filters'}
+              </Text>
+              {searchQuery.trim() ? (
+                <TouchableOpacity
+                  style={styles.clearSearchBtn}
+                  onPress={() => setSearchQuery('')}
+                >
+                  <Text style={styles.clearSearchBtnText}>Clear Search</Text>
+                </TouchableOpacity>
+              ) : null}
             </View>
           ) : (
-            jobs.map((job) => (
+            filteredJobs.map((job) => (
               <JobCard
                 key={job.id}
                 job={job}
@@ -467,5 +556,44 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textMuted,
     marginTop: 4,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.lg,
+  },
+  searchStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.surface,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: RADIUS.md,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  searchStatusText: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    flex: 1,
+  },
+  clearSearchLink: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginLeft: 8,
+  },
+  clearSearchBtn: {
+    marginTop: 16,
+    backgroundColor: COLORS.primaryLight,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  clearSearchBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.primary,
   },
 });
