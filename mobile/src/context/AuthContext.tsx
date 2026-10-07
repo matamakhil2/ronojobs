@@ -97,45 +97,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Convenient helper for testing candidates vs employers instantly in the app
   const setDemoUser = async (role: UserRole) => {
-    if (role === 'candidate') {
-      const demoCandidate: User = {
-        id: 'c1111111-1111-1111-1111-111111111111',
-        email: 'alex.dev@gmail.com',
-        role: 'candidate',
-        profile: {
-          user_id: 'c1111111-1111-1111-1111-111111111111',
-          full_name: 'Alex Rivera',
-          phone: '+1 (555) 234-5678',
-          location: 'San Francisco, CA',
-          headline: 'Senior Full Stack & Mobile Engineer',
-          bio: '5+ years building scale mobile apps with React Native, TypeScript, Node.js & PostgreSQL.',
-          experience_years: 5,
-          education: 'B.S. in Computer Science, UC Berkeley',
-          resume_url: 'https://ronojobs.com/resumes/alex_rivera_cv.pdf',
-          skills: ['React Native', 'Expo', 'TypeScript', 'Node.js', 'PostgreSQL', 'Docker'],
-        } as CandidateProfile,
-      };
-      setUser(demoCandidate);
-      setToken('demo-candidate-token');
-      await setStoredToken('demo-candidate-token');
-    } else if (role === 'employer') {
-      const demoEmployer: User = {
-        id: 'e2222222-2222-2222-2222-222222222222',
-        email: 'recruiter@techcorp.com',
-        role: 'employer',
-        profile: {
-          user_id: 'e2222222-2222-2222-2222-222222222222',
-          name: 'CloudScale Technologies',
-          logo_url: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200&auto=format&fit=crop&q=80',
-          description: 'Building next-generation distributed cloud infrastructure and developer tools.',
-          website: 'https://cloudscale.example.com',
-          location: 'San Francisco, CA / Remote',
-          industry: 'Cloud & DevOps',
-        } as CompanyProfile,
-      };
-      setUser(demoEmployer);
-      setToken('demo-employer-token');
-      await setStoredToken('demo-employer-token');
+    setIsLoading(true);
+    try {
+      if (role === 'candidate') {
+        try {
+          const res = await authApi.login('alex.dev@gmail.com', 'Candidate@123');
+          await setStoredToken(res.token);
+          setToken(res.token);
+          setUser(res.user);
+          return;
+        } catch (apiErr) {
+          console.warn('Backend login for demo candidate failed, using local offline fallback:', apiErr);
+        }
+
+        const demoCandidate: User = {
+          id: 'c1111111-1111-1111-1111-111111111111',
+          email: 'alex.dev@gmail.com',
+          role: 'candidate',
+          profile: {
+            user_id: 'c1111111-1111-1111-1111-111111111111',
+            full_name: 'Alex Rivera',
+            phone: '+1 (555) 234-5678',
+            location: 'San Francisco, CA',
+            headline: 'Senior Full Stack & Mobile Engineer',
+            bio: '5+ years building scale mobile apps with React Native, TypeScript, Node.js & PostgreSQL.',
+            experience_years: 5,
+            education: 'B.S. in Computer Science, UC Berkeley',
+            resume_url: 'https://ronojobs.com/resumes/alex_rivera_cv.pdf',
+            skills: ['React Native', 'Expo', 'TypeScript', 'Node.js', 'PostgreSQL', 'Docker'],
+          } as CandidateProfile,
+        };
+        setUser(demoCandidate);
+        setToken('demo-candidate-token');
+        await setStoredToken('demo-candidate-token');
+      } else if (role === 'employer') {
+        try {
+          const res = await authApi.login('recruiter@techcorp.com', 'Employer@123');
+          await setStoredToken(res.token);
+          setToken(res.token);
+          setUser(res.user);
+          return;
+        } catch (apiErr) {
+          console.warn('Backend login for demo employer failed, using local offline fallback:', apiErr);
+        }
+
+        const demoEmployer: User = {
+          id: 'e2222222-2222-2222-2222-222222222222',
+          email: 'recruiter@techcorp.com',
+          role: 'employer',
+          profile: {
+            user_id: 'e2222222-2222-2222-2222-222222222222',
+            name: 'CloudScale Technologies',
+            logo_url: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200&auto=format&fit=crop&q=80',
+            description: 'Building next-generation distributed cloud infrastructure and developer tools.',
+            website: 'https://cloudscale.example.com',
+            location: 'San Francisco, CA / Remote',
+            industry: 'Cloud & DevOps',
+          } as CompanyProfile,
+        };
+        setUser(demoEmployer);
+        setToken('demo-employer-token');
+        await setStoredToken('demo-employer-token');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -29,7 +29,14 @@ export default function ApplicantsScreen() {
   const fetchApplicants = useCallback(async () => {
     try {
       const res = await employerApi.getApplicants(jobId);
-      setApplicants(res.data || []);
+      const list = (res.data || []).map((item: any, idx: number) => ({
+        ...item,
+        id: item.id || item.application_id || `app-${idx}`,
+        candidate_name: item.candidate_name || item.full_name || 'Anonymous Candidate',
+        candidate_experience: item.candidate_experience || item.experience_years || 0,
+        applied_date: item.applied_date || item.applied_at || new Date().toISOString(),
+      }));
+      setApplicants(list);
       if (res.job?.title) {
         setJobTitle(res.job.title);
       }
@@ -99,89 +106,92 @@ export default function ApplicantsScreen() {
             </Text>
           </View>
         ) : (
-          applicants.map((app) => (
-            <View key={app.id} style={styles.applicantCard}>
-              {/* Top Row: Candidate Name, Headline, Current Status */}
-              <View style={styles.topRow}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>
-                    {(app.candidate_name || 'C').charAt(0).toUpperCase()}
-                  </Text>
+          applicants.map((app, idx) => {
+            const appId = app.id || (app as any).application_id || `applicant-${idx}`;
+            return (
+              <View key={appId} style={styles.applicantCard}>
+                {/* Top Row: Candidate Name, Headline, Current Status */}
+                <View style={styles.topRow}>
+                  <View style={styles.avatar}>
+                    <Text style={styles.avatarText}>
+                      {(app.candidate_name || 'C').charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+
+                  <View style={styles.candidateMeta}>
+                    <Text style={styles.candidateName}>{app.candidate_name || 'Anonymous Candidate'}</Text>
+                    <Text style={styles.candidateHeadline}>{app.headline || 'Full Stack Engineer'}</Text>
+                    <Text style={styles.candidateSub}>
+                      {app.candidate_email} • {app.candidate_experience || 5} yrs exp
+                    </Text>
+                  </View>
+
+                  <StatusBadge status={app.status} size="sm" />
                 </View>
 
-                <View style={styles.candidateMeta}>
-                  <Text style={styles.candidateName}>{app.candidate_name || 'Anonymous Candidate'}</Text>
-                  <Text style={styles.candidateHeadline}>{app.headline || 'Full Stack Engineer'}</Text>
-                  <Text style={styles.candidateSub}>
-                    {app.candidate_email} • {app.candidate_experience || 5} yrs exp
-                  </Text>
-                </View>
+                {/* Skills badges */}
+                {app.candidate_skills && app.candidate_skills.length > 0 && (
+                  <View style={styles.skillsRow}>
+                    {app.candidate_skills.map((s: string, skillIdx: number) => (
+                      <View key={`skill-${skillIdx}`} style={styles.skillTag}>
+                        <Text style={styles.skillTagText}>{s}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
 
-                <StatusBadge status={app.status} size="sm" />
-              </View>
+                {/* Cover note */}
+                {app.cover_note && (
+                  <View style={styles.noteBox}>
+                    <Text style={styles.noteLabel}>Cover Note:</Text>
+                    <Text style={styles.noteText}>"{app.cover_note}"</Text>
+                  </View>
+                )}
 
-              {/* Skills badges */}
-              {app.candidate_skills && app.candidate_skills.length > 0 && (
-                <View style={styles.skillsRow}>
-                  {app.candidate_skills.map((s: string, idx: number) => (
-                    <View key={idx} style={styles.skillTag}>
-                      <Text style={styles.skillTagText}>{s}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
+                {/* Resume button */}
+                {app.resume_url && (
+                  <TouchableOpacity
+                    style={styles.resumeBtn}
+                    onPress={() => Linking.openURL(app.resume_url!).catch(() => Alert.alert('Resume', app.resume_url))}
+                  >
+                    <Ionicons name="document-attach-outline" size={16} color={COLORS.primary} />
+                    <Text style={styles.resumeBtnText}>View Attached Resume / CV</Text>
+                    <Ionicons name="open-outline" size={14} color={COLORS.primary} />
+                  </TouchableOpacity>
+                )}
 
-              {/* Cover note */}
-              {app.cover_note && (
-                <View style={styles.noteBox}>
-                  <Text style={styles.noteLabel}>Cover Note:</Text>
-                  <Text style={styles.noteText}>"{app.cover_note}"</Text>
-                </View>
-              )}
-
-              {/* Resume button */}
-              {app.resume_url && (
-                <TouchableOpacity
-                  style={styles.resumeBtn}
-                  onPress={() => Linking.openURL(app.resume_url!).catch(() => Alert.alert('Resume', app.resume_url))}
-                >
-                  <Ionicons name="document-attach-outline" size={16} color={COLORS.primary} />
-                  <Text style={styles.resumeBtnText}>View Attached Resume / CV</Text>
-                  <Ionicons name="open-outline" size={14} color={COLORS.primary} />
-                </TouchableOpacity>
-              )}
-
-              {/* Update Status Actions */}
-              <View style={styles.statusUpdateSection}>
-                <Text style={styles.statusUpdateLabel}>Move Candidate in Hiring Pipeline:</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusButtonsRow}>
-                  {statusOptions.map((st) => {
-                    const isCurrent = app.status === st;
-                    return (
-                      <TouchableOpacity
-                        key={st}
-                        style={[
-                          styles.statusChangeBtn,
-                          isCurrent && styles.statusChangeBtnActive,
-                        ]}
-                        onPress={() => handleUpdateStatus(app.id, st)}
-                        disabled={updatingId === app.id}
-                      >
-                        <Text
+                {/* Update Status Actions */}
+                <View style={styles.statusUpdateSection}>
+                  <Text style={styles.statusUpdateLabel}>Move Candidate in Hiring Pipeline:</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusButtonsRow}>
+                    {statusOptions.map((st) => {
+                      const isCurrent = app.status === st;
+                      return (
+                        <TouchableOpacity
+                          key={st}
                           style={[
-                            styles.statusChangeText,
-                            isCurrent && styles.statusChangeTextActive,
+                            styles.statusChangeBtn,
+                            isCurrent && styles.statusChangeBtnActive,
                           ]}
+                          onPress={() => handleUpdateStatus(appId, st)}
+                          disabled={updatingId === appId}
                         >
-                          {st}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
+                          <Text
+                            style={[
+                              styles.statusChangeText,
+                              isCurrent && styles.statusChangeTextActive,
+                            ]}
+                          >
+                            {st}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
               </View>
-            </View>
-          ))
+            );
+          })
         )}
       </ScrollView>
     </SafeAreaView>

@@ -40,13 +40,21 @@ export default function ApplicationsScreen() {
         if (employerJobs.data && employerJobs.data.length > 0) {
           const firstJobId = employerJobs.data[0].id;
           const appsRes = await employerApi.getApplicants(firstJobId);
-          setApplications(appsRes.data || []);
+          const list = (appsRes.data || []).map((item: any, idx: number) => ({
+            ...item,
+            id: item.id || item.application_id || `employer-app-${idx}`,
+          }));
+          setApplications(list);
         } else {
           setApplications([]);
         }
       } else {
         const res = await applicationsApi.getMyApplications();
-        setApplications(res.data || []);
+        const list = (res.data || []).map((item: any, idx: number) => ({
+          ...item,
+          id: item.id || item.application_id || `my-app-${idx}`,
+        }));
+        setApplications(list);
       }
     } catch (e) {
       console.warn('Failed to load applications, showing demo data:', e);
@@ -141,9 +149,9 @@ export default function ApplicationsScreen() {
             )}
           </View>
         ) : (
-          applications.map((app) => (
+          applications.map((app, idx) => (
             <ApplicationCard
-              key={app.id}
+              key={app.id || (app as any).application_id || `app-card-${idx}`}
               application={app}
               onPress={() => {
                 if (isEmployer) {

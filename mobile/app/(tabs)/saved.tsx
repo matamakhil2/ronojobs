@@ -19,14 +19,14 @@ import { COLORS, RADIUS, SPACING } from '../../src/constants/theme';
 
 export default function SavedJobsScreen() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const [savedJobs, setSavedJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchSaved = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || user?.role !== 'candidate') {
       setLoading(false);
       return;
     }
@@ -41,7 +41,7 @@ export default function SavedJobsScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.role]);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,6 +77,26 @@ export default function SavedJobsScreen() {
             onPress={() => router.push('/(auth)/login')}
           >
             <Text style={styles.signInBtnText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (user?.role === 'employer') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.authPrompt}>
+          <Ionicons name="briefcase-outline" size={54} color={COLORS.primary} />
+          <Text style={styles.authTitle}>Employer Account</Text>
+          <Text style={styles.authSubtitle}>
+            Saved jobs bookmarks are for candidates. Head over to your Employer Dashboard to manage your posted jobs and review applicants.
+          </Text>
+          <TouchableOpacity
+            style={styles.signInBtn}
+            onPress={() => router.push('/employer')}
+          >
+            <Text style={styles.signInBtnText}>Go to Employer Dashboard</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

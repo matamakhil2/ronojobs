@@ -38,7 +38,7 @@ export default function EmployerDashboardScreen() {
         employerApi.getStats().catch(() => ({ data: null })),
       ]);
 
-      if (jobsRes.data && jobsRes.data.length > 0) {
+      if (jobsRes && Array.isArray(jobsRes.data)) {
         setJobs(jobsRes.data);
       } else {
         setJobs(FALLBACK_EMPLOYER_JOBS);
@@ -182,8 +182,8 @@ export default function EmployerDashboardScreen() {
             </TouchableOpacity>
           </View>
         ) : (
-          jobs.map((item) => (
-            <View key={item.id} style={styles.jobItemCard}>
+          jobs.map((item, idx) => (
+            <View key={item.id || item.job_id || `employer-job-${idx}`} style={styles.jobItemCard}>
               <View style={styles.jobItemHeader}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.jobItemTitle}>{item.title}</Text>

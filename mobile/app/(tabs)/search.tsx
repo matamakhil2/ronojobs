@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,6 +29,7 @@ export default function SearchScreen() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Sync when searchParams.q changes from outside (e.g. from Home search bar)
   useEffect(() => {
@@ -59,14 +61,41 @@ export default function SearchScreen() {
       setJobs([]);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, []);
+
+  // Update immediately when filters change
+  useEffect(() => {
+    fetchFilteredJobs(filters);
+  }, [filters, fetchFilteredJobs]);
 
   useFocusEffect(
     useCallback(() => {
       fetchFilteredJobs(filters);
     }, [fetchFilteredJobs, filters])
   );
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchFilteredJobs(filters);
+  };
+
+  const handleToggleSave = async (jobId: string, currentlySaved?: boolean) => {
+    // Optimistic UI update
+    setJobs((prev) =>
+      prev.map((j) => (j.id === jobId ? { ...j, is_saved: !currentlySaved } : j))
+    );
+    try {
+      if (currentlySaved) {
+        await jobsApi.unsaveJob(jobId);
+      } else {
+        await jobsApi.saveJob(jobId);
+      }
+    } catch (e) {
+      console.warn('Save toggle failed:', e);
+    }
+  };
 
   const handleSearchSubmit = () => {
     setFilters((prev) => ({ ...prev, q: searchInput.trim() }));
@@ -187,6 +216,9 @@ export default function SearchScreen() {
       <ScrollView
         contentContainerStyle={styles.resultsList}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+        }
       >
         {loading ? (
           <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
@@ -213,6 +245,7 @@ export default function SearchScreen() {
               key={job.id}
               job={job}
               onPress={() => router.push(`/job/${job.id}`)}
+              onSaveToggle={() => handleToggleSave(job.id, job.is_saved)}
               isSaved={job.is_saved}
             />
           ))
