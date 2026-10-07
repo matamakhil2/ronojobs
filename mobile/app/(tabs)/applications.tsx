@@ -115,7 +115,7 @@ export default function ApplicationsScreen() {
             onPress={() => router.push('/employer')}
           >
             <Text style={styles.employerSwitchText}>Dashboard</Text>
-            <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
+            <Ionicons name="arrow-forward" size={14} color={COLORS.secondary} />
           </TouchableOpacity>
         )}
       </View>
@@ -125,11 +125,19 @@ export default function ApplicationsScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={isEmployer ? COLORS.secondary : COLORS.primary}
+          />
         }
       >
         {loading ? (
-          <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
+          <ActivityIndicator
+            size="large"
+            color={isEmployer ? COLORS.secondary : COLORS.primary}
+            style={{ marginTop: 40 }}
+          />
         ) : applications.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="document-text-outline" size={48} color={COLORS.textMuted} />
@@ -227,7 +235,7 @@ const styles = StyleSheet.create({
   employerSwitchBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.secondaryLight,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: RADIUS.full,
@@ -236,7 +244,7 @@ const styles = StyleSheet.create({
   employerSwitchText: {
     fontSize: 12,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   scroll: {
     padding: SPACING.md,

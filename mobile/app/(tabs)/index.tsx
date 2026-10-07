@@ -207,7 +207,11 @@ export default function HomeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={isEmployer ? COLORS.secondary : COLORS.primary}
+          />
         }
         contentContainerStyle={styles.scrollContent}
       >
@@ -255,7 +259,7 @@ export default function HomeScreen() {
               <Ionicons
                 name="briefcase"
                 size={16}
-                color={employerTab === 'my_jobs' ? COLORS.primary : COLORS.textSecondary}
+                color={employerTab === 'my_jobs' ? COLORS.secondary : COLORS.textSecondary}
               />
               <Text
                 style={[
@@ -277,7 +281,7 @@ export default function HomeScreen() {
               <Ionicons
                 name="globe-outline"
                 size={16}
-                color={employerTab === 'market' ? COLORS.primary : COLORS.textSecondary}
+                color={employerTab === 'market' ? COLORS.secondary : COLORS.textSecondary}
               />
               <Text
                 style={[
@@ -302,8 +306,8 @@ export default function HomeScreen() {
                 </Text>
                 <Text style={styles.metricLabel}>Active Listings</Text>
               </View>
-              <View style={[styles.metricCard, { borderColor: '#E0F2FE' }]}>
-                <Text style={[styles.metricValue, { color: COLORS.primary }]}>
+              <View style={[styles.metricCard, { borderColor: '#DEF7EC' }]}>
+                <Text style={[styles.metricValue, { color: COLORS.secondary }]}>
                   {employerStats?.total_applicants ?? 5}
                 </Text>
                 <Text style={styles.metricLabel}>Total Applicants</Text>
@@ -322,7 +326,7 @@ export default function HomeScreen() {
                 <Ionicons
                   name="search"
                   size={20}
-                  color={searchQuery ? COLORS.primary : COLORS.textSecondary}
+                  color={searchQuery ? COLORS.secondary : COLORS.textSecondary}
                 />
                 <TextInput
                   style={styles.searchInput}
@@ -432,7 +436,7 @@ export default function HomeScreen() {
                     {/* Applicant Pipeline Stats Bar */}
                     <View style={styles.pipelineBar}>
                       <View style={styles.pipelineStat}>
-                        <Ionicons name="people-outline" size={15} color={COLORS.primary} />
+                        <Ionicons name="people-outline" size={15} color={COLORS.secondary} />
                         <Text style={styles.pipelineStatText}>
                           <Text style={{ fontWeight: '700', color: COLORS.text }}>
                             {item.applicants_count ?? 3}
@@ -441,7 +445,7 @@ export default function HomeScreen() {
                         </Text>
                       </View>
                       <View style={styles.pipelineStat}>
-                        <Ionicons name="star-outline" size={15} color={COLORS.secondary} />
+                        <Ionicons name="star-outline" size={15} color={COLORS.accent} />
                         <Text style={styles.pipelineStatText}>
                           <Text style={{ fontWeight: '700', color: COLORS.text }}>
                             {item.shortlisted_count ?? 1}
@@ -457,7 +461,7 @@ export default function HomeScreen() {
                         style={styles.viewApplicantsBtn}
                         onPress={() => router.push(`/employer/applicants/${item.id}`)}
                       >
-                        <Ionicons name="people" size={16} color={COLORS.primary} />
+                        <Ionicons name="people" size={16} color={COLORS.secondary} />
                         <Text style={styles.viewApplicantsBtnText}>View Applicants</Text>
                       </TouchableOpacity>
 
@@ -766,7 +770,7 @@ const styles = StyleSheet.create({
   headerPostBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingVertical: 7,
     paddingHorizontal: 12,
     borderRadius: RADIUS.md,
@@ -805,7 +809,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   employerSegmentTextActive: {
-    color: COLORS.primary,
+    color: COLORS.secondary,
     fontWeight: '700',
   },
   metricsRow: {
@@ -888,7 +892,7 @@ const styles = StyleSheet.create({
   },
   viewAllLink: {
     fontSize: 13,
-    color: COLORS.primary,
+    color: COLORS.secondary,
     fontWeight: '700',
   },
   categoryScroll: {
@@ -897,18 +901,18 @@ const styles = StyleSheet.create({
   employerBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.secondaryLight,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: '#A7F3D0',
     gap: 12,
   },
   employerBannerTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   employerBannerSubtitle: {
     fontSize: 12,
@@ -919,7 +923,7 @@ const styles = StyleSheet.create({
   postJobBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: RADIUS.md,
@@ -956,7 +960,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 16,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: RADIUS.md,
@@ -1030,7 +1034,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.secondaryLight,
     paddingVertical: 8,
     borderRadius: RADIUS.md,
     gap: 6,
@@ -1038,7 +1042,7 @@ const styles = StyleSheet.create({
   viewApplicantsBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   previewBtn: {
     flexDirection: 'row',

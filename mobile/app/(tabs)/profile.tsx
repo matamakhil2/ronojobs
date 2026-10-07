@@ -24,6 +24,8 @@ export default function ProfileScreen() {
 
   const isCandidate = user?.role === 'candidate';
   const isEmployer = user?.role === 'employer';
+  const roleColor = isEmployer ? COLORS.secondary : COLORS.primary;
+  const roleLight = isEmployer ? COLORS.secondaryLight : COLORS.primaryLight;
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -143,8 +145,8 @@ export default function ProfileScreen() {
         {/* Profile Card Header */}
         <View style={styles.profileCard}>
           <View style={styles.avatarRow}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
+            <View style={[styles.avatar, { backgroundColor: roleLight }]}>
+              <Text style={[styles.avatarText, { color: roleColor }]}>
                 {isCandidate
                   ? (fullName || 'U').charAt(0).toUpperCase()
                   : (companyName || 'C').charAt(0).toUpperCase()}
@@ -156,13 +158,13 @@ export default function ProfileScreen() {
                 {isCandidate ? fullName || 'Candidate' : companyName || 'Company'}
               </Text>
               <Text style={styles.profileEmail}>{user?.email}</Text>
-              <View style={styles.roleBadge}>
+              <View style={[styles.roleBadge, { backgroundColor: roleLight }]}>
                 <Ionicons
                   name={isCandidate ? 'person' : 'business'}
                   size={12}
-                  color={COLORS.primary}
+                  color={roleColor}
                 />
-                <Text style={styles.roleBadgeText}>
+                <Text style={[styles.roleBadgeText, { color: roleColor }]}>
                   {user?.role?.toUpperCase()} ACCOUNT
                 </Text>
               </View>
@@ -170,7 +172,7 @@ export default function ProfileScreen() {
           </View>
 
           <TouchableOpacity
-            style={styles.editToggleBtn}
+            style={[styles.editToggleBtn, { backgroundColor: roleColor }]}
             onPress={() => (isEditing ? handleSaveProfile() : setIsEditing(true))}
             disabled={saving}
           >
@@ -373,7 +375,7 @@ export default function ProfileScreen() {
                   onChangeText={setCompanyWebsite}
                 />
               ) : (
-                <Text style={[styles.fieldValue, { color: COLORS.primary }]}>
+                <Text style={[styles.fieldValue, { color: roleColor }]}>
                   {companyWebsite || 'Not specified'}
                 </Text>
               )}
@@ -401,7 +403,10 @@ export default function ProfileScreen() {
           <Text style={styles.demoHeader}>⚡ Switch Demo Account Mode</Text>
           <View style={styles.demoRow}>
             <TouchableOpacity
-              style={[styles.demoBtn, isCandidate && styles.demoBtnActive]}
+              style={[
+                styles.demoBtn,
+                isCandidate && { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+              ]}
               onPress={() => setDemoUser('candidate')}
             >
               <Text style={[styles.demoBtnText, isCandidate && styles.demoBtnTextActive]}>
@@ -410,7 +415,10 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.demoBtn, isEmployer && styles.demoBtnActive]}
+              style={[
+                styles.demoBtn,
+                isEmployer && { backgroundColor: COLORS.secondary, borderColor: COLORS.secondary },
+              ]}
               onPress={() => setDemoUser('employer')}
             >
               <Text style={[styles.demoBtnText, isEmployer && styles.demoBtnTextActive]}>

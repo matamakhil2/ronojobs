@@ -146,14 +146,14 @@ export default function EmployerDashboardScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.secondary} />
         }
       >
         {/* Metric Cards Row */}
         <View style={styles.metricsRow}>
           <View style={styles.metricCard}>
-            <View style={[styles.metricIconBox, { backgroundColor: COLORS.primaryLight }]}>
-              <Ionicons name="briefcase" size={18} color={COLORS.primary} />
+            <View style={[styles.metricIconBox, { backgroundColor: COLORS.secondaryLight }]}>
+              <Ionicons name="briefcase" size={18} color={COLORS.secondary} />
             </View>
             <Text style={styles.metricNumber}>{stats.total_jobs || jobs.length}</Text>
             <Text style={styles.metricLabel}>Posted Jobs</Text>
@@ -190,7 +190,7 @@ export default function EmployerDashboardScreen() {
             <Ionicons
               name="search"
               size={18}
-              color={searchQuery ? COLORS.primary : COLORS.textSecondary}
+              color={searchQuery ? COLORS.secondary : COLORS.textSecondary}
             />
             <TextInput
               style={styles.searchInput}
@@ -265,7 +265,7 @@ export default function EmployerDashboardScreen() {
         </View>
 
         {loading ? (
-          <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color={COLORS.secondary} style={{ marginTop: 40 }} />
         ) : filteredJobs.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="search-outline" size={48} color={COLORS.textMuted} />
@@ -356,7 +356,7 @@ export default function EmployerDashboardScreen() {
                   style={styles.viewApplicantsBtn}
                   onPress={() => router.push(`/employer/applicants/${item.id}`)}
                 >
-                  <Ionicons name="people" size={16} color={COLORS.primary} />
+                  <Ionicons name="people" size={16} color={COLORS.secondary} />
                   <Text style={styles.viewApplicantsText}>View Applicants</Text>
                 </TouchableOpacity>
 
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   postBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: RADIUS.md,
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
   pipelineCount: {
     fontSize: 14,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   pipelineLabel: {
     fontSize: 10,
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.secondaryLight,
     paddingVertical: 10,
     borderRadius: RADIUS.md,
     gap: 6,
@@ -574,7 +574,7 @@ const styles = StyleSheet.create({
   viewApplicantsText: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   iconActionBtn: {
     width: 40,
@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
   },
   createFirstBtn: {
     marginTop: SPACING.md,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: RADIUS.md,
@@ -649,8 +649,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   filterChipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
+    borderColor: COLORS.secondary,
   },
   filterChipText: {
     fontSize: 12,

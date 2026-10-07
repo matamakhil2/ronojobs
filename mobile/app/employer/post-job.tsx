@@ -304,8 +304,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   chipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
+    borderColor: COLORS.secondary,
   },
   chipText: {
     fontSize: 12,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     borderRadius: RADIUS.md,
     paddingVertical: 16,
     gap: 8,

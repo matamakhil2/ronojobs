@@ -12,6 +12,7 @@ import {
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../../src/context/AuthContext';
 import { jobsApi } from '../../src/services/api';
 import { Job, JobFilters } from '../../src/types';
 import { JobCard } from '../../src/components/JobCard';
@@ -20,6 +21,11 @@ import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function SearchScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const isEmployer = user?.role === 'employer';
+  const roleColor = isEmployer ? COLORS.secondary : COLORS.primary;
+  const roleLight = isEmployer ? COLORS.secondaryLight : COLORS.primaryLight;
+
   const searchParams = useLocalSearchParams<{ q?: string }>();
 
   const [filters, setFilters] = useState<JobFilters>({
@@ -144,13 +150,16 @@ export default function SearchScreen() {
         </View>
 
         <TouchableOpacity
-          style={[styles.filterButton, activeFiltersCount > 0 && styles.filterButtonActive]}
+          style={[
+            styles.filterButton,
+            activeFiltersCount > 0 && { backgroundColor: roleColor, borderColor: roleColor },
+          ]}
           onPress={() => setIsFilterModalOpen(true)}
         >
           <Ionicons
             name="funnel-outline"
             size={18}
-            color={activeFiltersCount > 0 ? COLORS.textInverse : COLORS.primary}
+            color={activeFiltersCount > 0 ? COLORS.textInverse : roleColor}
           />
           {activeFiltersCount > 0 && (
             <View style={styles.filterBadge}>
@@ -168,37 +177,37 @@ export default function SearchScreen() {
           contentContainerStyle={styles.activeFiltersRow}
         >
           {filters.location && (
-            <View style={styles.activeChip}>
+            <View style={[styles.activeChip, { borderColor: roleColor }]}>
               <Text style={styles.activeChipText}>📍 {filters.location}</Text>
               <TouchableOpacity onPress={() => handleRemoveFilter('location')}>
-                <Ionicons name="close" size={14} color={COLORS.primary} />
+                <Ionicons name="close" size={14} color={roleColor} />
               </TouchableOpacity>
             </View>
           )}
 
           {filters.employment_type && (
-            <View style={styles.activeChip}>
+            <View style={[styles.activeChip, { borderColor: roleColor }]}>
               <Text style={styles.activeChipText}>💼 {filters.employment_type}</Text>
               <TouchableOpacity onPress={() => handleRemoveFilter('employment_type')}>
-                <Ionicons name="close" size={14} color={COLORS.primary} />
+                <Ionicons name="close" size={14} color={roleColor} />
               </TouchableOpacity>
             </View>
           )}
 
           {filters.experience && (
-            <View style={styles.activeChip}>
+            <View style={[styles.activeChip, { borderColor: roleColor }]}>
               <Text style={styles.activeChipText}>🎯 {filters.experience}</Text>
               <TouchableOpacity onPress={() => handleRemoveFilter('experience')}>
-                <Ionicons name="close" size={14} color={COLORS.primary} />
+                <Ionicons name="close" size={14} color={roleColor} />
               </TouchableOpacity>
             </View>
           )}
 
           {filters.category && (
-            <View style={styles.activeChip}>
+            <View style={[styles.activeChip, { borderColor: roleColor }]}>
               <Text style={styles.activeChipText}>📂 {filters.category}</Text>
               <TouchableOpacity onPress={() => handleRemoveFilter('category')}>
-                <Ionicons name="close" size={14} color={COLORS.primary} />
+                <Ionicons name="close" size={14} color={roleColor} />
               </TouchableOpacity>
             </View>
           )}
@@ -217,11 +226,11 @@ export default function SearchScreen() {
         contentContainerStyle={styles.resultsList}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={roleColor} />
         }
       >
         {loading ? (
-          <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color={roleColor} style={{ marginTop: 40 }} />
         ) : jobs.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="search-outline" size={48} color={COLORS.textMuted} />
@@ -236,7 +245,7 @@ export default function SearchScreen() {
                 setSearchInput('');
               }}
             >
-              <Text style={styles.resetSearchBtnText}>Reset Filters</Text>
+              <Text style={[styles.resetSearchBtnText, { color: roleColor }]}>Reset Filters</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -245,8 +254,8 @@ export default function SearchScreen() {
               key={job.id}
               job={job}
               onPress={() => router.push(`/job/${job.id}`)}
-              onSaveToggle={() => handleToggleSave(job.id, job.is_saved)}
-              isSaved={job.is_saved}
+              onSaveToggle={isEmployer ? undefined : () => handleToggleSave(job.id, job.is_saved)}
+              isSaved={isEmployer ? false : job.is_saved}
             />
           ))
         )}

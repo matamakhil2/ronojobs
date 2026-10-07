@@ -96,7 +96,7 @@ export default function ApplicantsScreen() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {loading ? (
-          <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color={COLORS.secondary} style={{ marginTop: 40 }} />
         ) : applicants.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="people-outline" size={54} color={COLORS.textMuted} />
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   },
   candidateHeadline: {
     fontSize: 12,
-    color: COLORS.primary,
+    color: COLORS.secondary,
     fontWeight: '600',
     marginTop: 1,
   },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   resumeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.secondaryLight,
     padding: 10,
     borderRadius: RADIUS.md,
     gap: 8,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   resumeBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.secondary,
     flex: 1,
   },
   statusUpdateSection: {
@@ -385,8 +385,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
   },
   statusChangeBtnActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
+    borderColor: COLORS.secondary,
   },
   statusChangeText: {
     fontSize: 12,
