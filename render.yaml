@@ -4,7 +4,7 @@ services:
     name: ronojobs-backend
     env: node
     rootDir: backend
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start
     plan: free
     healthCheckPath: /api/v1/health
