@@ -431,7 +431,7 @@ export default function ProfileScreen() {
           containerStyle={{ alignSelf: 'center', marginTop: SPACING.xl, marginBottom: SPACING.md, opacity: 0.8 }}
           logoSize={24}
           fontSize={16}
-          subtitle="v1.0.0 • Connected to Render Cloud"
+          subtitle="Version 1.0.0 • Official Release"
         />
       </ScrollView>
     </SafeAreaView>
