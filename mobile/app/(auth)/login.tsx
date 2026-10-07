@@ -149,10 +149,10 @@ export default function LoginScreen() {
                 <Text style={styles.quickFillText}>Candidate (Alex)</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.quickFillBtn, { borderColor: COLORS.purple }]}
+                style={[styles.quickFillBtn, { borderColor: COLORS.secondary }]}
                 onPress={fillEmployerCreds}
               >
-                <Text style={[styles.quickFillText, { color: COLORS.purple }]}>Employer (Recruiter)</Text>
+                <Text style={[styles.quickFillText, { color: COLORS.secondary }]}>Employer (Recruiter)</Text>
               </TouchableOpacity>
             </View>
           </View>

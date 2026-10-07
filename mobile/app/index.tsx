@@ -42,18 +42,18 @@ export default function SplashScreen() {
           Connect with world-class opportunities. The next-generation hiring platform for tech talent and top employers.
         </Text>
 
-        {/* Feature Pills */}
+        {/* Feature Pills (reflecting the 3 logo colors: Purple, Orange, Blue) */}
         <View style={styles.featureGrid}>
           <View style={styles.featurePill}>
-            <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
+            <Ionicons name="checkmark-circle" size={16} color={COLORS.primary} />
             <Text style={styles.featureText}>Verified Employers</Text>
           </View>
           <View style={styles.featurePill}>
-            <Ionicons name="flash" size={16} color={COLORS.warning} />
+            <Ionicons name="flash" size={16} color={COLORS.accent} />
             <Text style={styles.featureText}>Instant Status Tracking</Text>
           </View>
           <View style={styles.featurePill}>
-            <Ionicons name="shield-checkmark" size={16} color={COLORS.info} />
+            <Ionicons name="shield-checkmark" size={16} color={COLORS.secondary} />
             <Text style={styles.featureText}>Direct Hiring Pipeline</Text>
           </View>
         </View>
@@ -91,11 +91,11 @@ export default function SplashScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.demoBtn, { borderColor: COLORS.purple, backgroundColor: COLORS.purpleLight }]}
+              style={[styles.demoBtn, { borderColor: COLORS.secondary, backgroundColor: COLORS.secondaryLight }]}
               onPress={handleStartEmployer}
             >
-              <Ionicons name="business" size={14} color={COLORS.purple} />
-              <Text style={[styles.demoBtnText, { color: COLORS.purple }]}>Employer Demo</Text>
+              <Ionicons name="business" size={14} color={COLORS.secondary} />
+              <Text style={[styles.demoBtnText, { color: COLORS.secondary }]}>Employer Demo</Text>
             </TouchableOpacity>
           </View>
         </View>

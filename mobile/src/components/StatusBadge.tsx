@@ -12,11 +12,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
   const getBadgeStyle = () => {
     switch (status) {
       case 'Applied':
-        return { bg: COLORS.infoLight, text: COLORS.info, border: '#BFDBFE' };
+        return { bg: COLORS.infoLight, text: COLORS.info, border: '#BAE6FD' };
       case 'Shortlisted':
-        return { bg: COLORS.warningLight, text: COLORS.warning, border: '#FDE68A' };
+        return { bg: COLORS.warningLight, text: COLORS.warning, border: '#FED7AA' };
       case 'Interview':
-        return { bg: COLORS.purpleLight, text: COLORS.purple, border: '#DDD6FE' };
+        return { bg: COLORS.purpleLight, text: COLORS.purple, border: '#E9D5FF' };
       case 'Selected':
         return { bg: COLORS.successLight, text: COLORS.success, border: '#A7F3D0' };
       case 'Rejected':

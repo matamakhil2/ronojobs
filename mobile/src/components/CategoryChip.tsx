@@ -75,6 +75,6 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   countSelected: {
-    color: '#E0E7FF',
+    color: '#F3E8FF',
   },
 });
