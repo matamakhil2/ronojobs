@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../src/context/AuthContext';
+import { AppLogo } from '../src/components/AppLogo';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../src/constants/theme';
 
 export default function SplashScreen() {
@@ -31,7 +32,7 @@ export default function SplashScreen() {
       {/* Top Brand Hero */}
       <View style={styles.heroContent}>
         <View style={styles.logoBadge}>
-          <Ionicons name="sparkles" size={32} color={COLORS.primary} />
+          <AppLogo size={52} />
         </View>
 
         <Text style={styles.brandTitle}>

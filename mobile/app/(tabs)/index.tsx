@@ -18,6 +18,7 @@ import { jobsApi } from '../../src/services/api';
 import { Job } from '../../src/types';
 import { JobCard } from '../../src/components/JobCard';
 import { CategoryChip } from '../../src/components/CategoryChip';
+import { AppLogo } from '../../src/components/AppLogo';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function HomeScreen() {
@@ -105,11 +106,14 @@ export default function HomeScreen() {
       >
         {/* Top Header / Greeting */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>
-              {user ? `Hello, ${user.role === 'candidate' ? (user.profile as any)?.full_name || 'Candidate' : (user.profile as any)?.name || 'Employer'}` : 'Welcome to RonoJobs 👋'}
-            </Text>
-            <Text style={styles.headerTitle}>Find Your Dream Opportunity</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+            <AppLogo size={42} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.greeting} numberOfLines={1}>
+                {user ? `Hello, ${user.role === 'candidate' ? (user.profile as any)?.full_name || 'Candidate' : (user.profile as any)?.name || 'Employer'}` : 'Welcome to RonoJobs 👋'}
+              </Text>
+              <Text style={styles.headerTitle} numberOfLines={1}>Find Your Dream Opportunity</Text>
+            </View>
           </View>
 
           {isEmployer && (

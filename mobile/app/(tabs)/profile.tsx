@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
 import { profileApi } from '../../src/services/api';
 import { CandidateProfile, CompanyProfile } from '../../src/types';
+import { AppLogo, AppBrand } from '../../src/components/AppLogo';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function ProfileScreen() {
@@ -120,7 +121,7 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.authPrompt}>
-          <Ionicons name="person-circle-outline" size={64} color={COLORS.primary} />
+          <AppLogo size={64} containerStyle={{ marginBottom: 12 }} />
           <Text style={styles.authTitle}>Your RonoJobs Profile</Text>
           <Text style={styles.authSubtitle}>
             Sign in to build your professional profile, showcase your skills, and apply to jobs in one click.
@@ -424,6 +425,14 @@ export default function ProfileScreen() {
           <Ionicons name="log-out-outline" size={20} color={COLORS.danger} />
           <Text style={styles.logoutBtnText}>Sign Out</Text>
         </TouchableOpacity>
+
+        {/* App Branding Footer */}
+        <AppBrand
+          containerStyle={{ alignSelf: 'center', marginTop: SPACING.xl, marginBottom: SPACING.md, opacity: 0.8 }}
+          logoSize={24}
+          fontSize={16}
+          subtitle="v1.0.0 • Connected to Render Cloud"
+        />
       </ScrollView>
     </SafeAreaView>
   );

@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
+import { AppLogo } from '../../src/components/AppLogo';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function RegisterScreen() {
@@ -75,6 +76,9 @@ export default function RegisterScreen() {
           </TouchableOpacity>
 
           <View style={styles.header}>
+            <View style={{ marginBottom: 12 }}>
+              <AppLogo size={46} />
+            </View>
             <Text style={styles.title}>Create Account ✨</Text>
             <Text style={styles.subtitle}>Join RonoJobs hiring ecosystem</Text>
           </View>

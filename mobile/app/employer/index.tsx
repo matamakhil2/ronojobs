@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
 import { employerApi, jobsApi } from '../../src/services/api';
+import { AppLogo } from '../../src/components/AppLogo';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function EmployerDashboardScreen() {
@@ -101,11 +102,14 @@ export default function EmployerDashboardScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Top Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Employer Dashboard 📊</Text>
-          <Text style={styles.subtitle}>
-            {(user?.profile as any)?.name || 'Company Hub'}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <AppLogo size={38} />
+          <View>
+            <Text style={styles.title}>Employer Hub 📊</Text>
+            <Text style={styles.subtitle}>
+              {(user?.profile as any)?.name || 'Company Hub'}
+            </Text>
+          </View>
         </View>
 
         <TouchableOpacity
