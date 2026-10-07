@@ -213,20 +213,12 @@ function renderHighResLogo(size, paddingRatio = 0.08, bgColor = null) {
 }
 
 console.log('Rendering 1024x1024 crystal-clear anti-aliased assets...');
-// In-app logo: transparent, crisp margin
-const logoPng = renderHighResLogo(1024, 0.05, null);
-// App icon: full-bleed white background (prevents Android/iOS gray squircle fallback)
-const iconPng = renderHighResLogo(1024, 0.16, [255, 255, 255]);
-// Android adaptive icon foreground (66% safe zone, transparent background)
-const adaptivePng = renderHighResLogo(1024, 0.22, null);
-// Splash screen icon (transparent background)
-const splashPng = renderHighResLogo(1024, 0.18, null);
-// Web Favicon
-const faviconPng = renderHighResLogo(256, 0.06, null);
+// The exact inner logo: 1024x1024, crisp padding, transparent background
+const logoPng = renderHighResLogo(1024, 0.08, null);
 
 fs.writeFileSync('d:/Ronojobs/mobile/assets/logo.png', logoPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/icon.png', iconPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/adaptive-icon.png', adaptivePng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/splash-icon.png', splashPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/favicon.png', faviconPng);
-console.log('Successfully saved ultra-crisp assets for all platforms!');
+fs.writeFileSync('d:/Ronojobs/mobile/assets/splash-icon.png', logoPng);
+fs.writeFileSync('d:/Ronojobs/mobile/assets/icon.png', logoPng);
+fs.writeFileSync('d:/Ronojobs/mobile/assets/adaptive-icon.png', logoPng);
+fs.writeFileSync('d:/Ronojobs/mobile/assets/favicon.png', logoPng);
+console.log('Successfully saved identical inner logo across all assets!');
