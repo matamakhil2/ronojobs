@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ import { COLORS, RADIUS, SHADOWS, SPACING } from '../src/constants/theme';
 
 export default function SplashScreen() {
   const router = useRouter();
-  const { isAuthenticated, user, setDemoUser } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -17,89 +17,116 @@ export default function SplashScreen() {
     }
   }, [isAuthenticated]);
 
-  const handleStartCandidate = async () => {
-    await setDemoUser('candidate');
-    router.replace('/(tabs)');
-  };
-
-  const handleStartEmployer = async () => {
-    await setDemoUser('employer');
-    router.replace('/(tabs)');
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Brand Hero */}
-      <View style={styles.heroContent}>
-        <View style={styles.logoBadge}>
-          <AppLogo size={52} />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        {/* Top Brand Hero */}
+        <View style={styles.heroContent}>
+          <View style={styles.logoBadge}>
+            <AppLogo size={56} />
+          </View>
+
+          <Text style={styles.brandTitle}>
+            Rono<Text style={{ color: COLORS.primary }}>Jobs</Text>
+          </Text>
+
+          <Text style={styles.heroHeadline}>
+            Where Tech Talent Meets World-Class Teams
+          </Text>
+
+          <Text style={styles.tagline}>
+            Explore thousands of verified engineering, design, and remote roles from top tech employers.
+          </Text>
         </View>
 
-        <Text style={styles.brandTitle}>
-          Rono<Text style={{ color: COLORS.primary }}>Jobs</Text>
-        </Text>
-        <Text style={styles.tagline}>
-          Connect with world-class opportunities. The next-generation hiring platform for tech talent and top employers.
-        </Text>
-
-        {/* Feature Pills (reflecting the 3 logo colors: Purple, Orange, Blue) */}
-        <View style={styles.featureGrid}>
-          <View style={styles.featurePill}>
-            <Ionicons name="checkmark-circle" size={16} color={COLORS.primary} />
-            <Text style={styles.featureText}>Verified Employers</Text>
+        {/* Value Proposition Cards (Reflecting the 3 brand logo colors: Purple, Orange, Blue) */}
+        <View style={styles.valueSection}>
+          <View style={styles.valueCard}>
+            <View style={[styles.valueIconBox, { backgroundColor: COLORS.primaryLight }]}>
+              <Ionicons name="briefcase" size={20} color={COLORS.primary} />
+            </View>
+            <View style={styles.valueTextBox}>
+              <Text style={styles.valueTitle}>Vetted Tech Opportunities</Text>
+              <Text style={styles.valueDesc}>
+                Direct roles from innovative startups and global tech leaders.
+              </Text>
+            </View>
           </View>
-          <View style={styles.featurePill}>
-            <Ionicons name="flash" size={16} color={COLORS.accent} />
-            <Text style={styles.featureText}>Instant Status Tracking</Text>
+
+          <View style={styles.valueCard}>
+            <View style={[styles.valueIconBox, { backgroundColor: COLORS.warningLight }]}>
+              <Ionicons name="flash" size={20} color={COLORS.accent} />
+            </View>
+            <View style={styles.valueTextBox}>
+              <Text style={styles.valueTitle}>Real-Time Status Tracking</Text>
+              <Text style={styles.valueDesc}>
+                Never wonder about your application status with live hiring stages.
+              </Text>
+            </View>
           </View>
-          <View style={styles.featurePill}>
-            <Ionicons name="shield-checkmark" size={16} color={COLORS.secondary} />
-            <Text style={styles.featureText}>Direct Hiring Pipeline</Text>
-          </View>
-        </View>
-      </View>
 
-      {/* Action Buttons */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={styles.primaryBtn}
-          onPress={() => router.push('/(auth)/login')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.primaryBtnText}>Sign In / Get Started</Text>
-          <Ionicons name="arrow-forward" size={18} color={COLORS.textInverse} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.secondaryBtn}
-          onPress={() => router.push('/(tabs)')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.secondaryBtnText}>Browse Jobs as Guest</Text>
-        </TouchableOpacity>
-
-        {/* Demo Fast Tracks */}
-        <View style={styles.demoSection}>
-          <Text style={styles.demoLabel}>⚡ Quick Demo Sign-In:</Text>
-          <View style={styles.demoRow}>
-            <TouchableOpacity
-              style={styles.demoBtn}
-              onPress={handleStartCandidate}
-            >
-              <Ionicons name="person" size={14} color={COLORS.primary} />
-              <Text style={styles.demoBtnText}>Candidate Demo</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.demoBtn, { borderColor: COLORS.secondary, backgroundColor: COLORS.secondaryLight }]}
-              onPress={handleStartEmployer}
-            >
-              <Ionicons name="business" size={14} color={COLORS.secondary} />
-              <Text style={[styles.demoBtnText, { color: COLORS.secondary }]}>Employer Demo</Text>
-            </TouchableOpacity>
+          <View style={styles.valueCard}>
+            <View style={[styles.valueIconBox, { backgroundColor: COLORS.secondaryLight }]}>
+              <Ionicons name="shield-checkmark" size={20} color={COLORS.secondary} />
+            </View>
+            <View style={styles.valueTextBox}>
+              <Text style={styles.valueTitle}>Direct Hiring Pipeline</Text>
+              <Text style={styles.valueDesc}>
+                Connect directly with verified hiring managers and founders.
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
+
+        {/* Quick Platform Metrics */}
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>10k+</Text>
+            <Text style={styles.statLabel}>Active Jobs</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>500+</Text>
+            <Text style={styles.statLabel}>Top Companies</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>98%</Text>
+            <Text style={styles.statLabel}>Response Rate</Text>
+          </View>
+        </View>
+
+        {/* Action Buttons Section */}
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={styles.primaryBtn}
+            onPress={() => router.push('/(auth)/login')}
+            activeOpacity={0.88}
+          >
+            <Text style={styles.primaryBtnText}>Sign In / Get Started</Text>
+            <View style={styles.arrowCircle}>
+              <Ionicons name="arrow-forward" size={16} color={COLORS.primary} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryBtn}
+            onPress={() => router.push('/(tabs)')}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="compass-outline" size={18} color={COLORS.textSecondary} />
+            <Text style={styles.secondaryBtnText}>Browse Jobs as Guest</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.footerNote}>
+            Free for all job seekers • No credit card required
+          </Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -108,17 +135,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'space-between',
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.lg,
   },
   heroContent: {
     alignItems: 'center',
-    marginTop: SPACING.xl,
+    marginTop: SPACING.sm,
   },
   logoBadge: {
-    width: 76,
-    height: 76,
-    borderRadius: RADIUS.xl,
+    width: 84,
+    height: 84,
+    borderRadius: 22,
     backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -128,106 +160,145 @@ const styles = StyleSheet.create({
     ...SHADOWS.md,
   },
   brandTitle: {
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: '800',
     color: COLORS.text,
     letterSpacing: -1,
   },
+  heroHeadline: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.text,
+    textAlign: 'center',
+    marginTop: 6,
+    paddingHorizontal: SPACING.sm,
+  },
   tagline: {
-    fontSize: 15,
+    fontSize: 13,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    marginTop: SPACING.sm,
-    lineHeight: 22,
+    marginTop: 6,
+    lineHeight: 19,
     paddingHorizontal: SPACING.md,
   },
-  featureGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 8,
-    marginTop: SPACING.xl,
+  valueSection: {
+    marginVertical: SPACING.md,
+    gap: 10,
   },
-  featurePill: {
+  valueCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.card,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: RADIUS.full,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
-    gap: 6,
+    gap: 12,
     ...SHADOWS.sm,
   },
-  featureText: {
-    fontSize: 12,
-    fontWeight: '600',
+  valueIconBox: {
+    width: 42,
+    height: 42,
+    borderRadius: RADIUS.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  valueTextBox: {
+    flex: 1,
+  },
+  valueTitle: {
+    fontSize: 14,
+    fontWeight: '700',
     color: COLORS.text,
   },
+  valueDesc: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: SPACING.lg,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statNumber: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: COLORS.primary,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  statDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: COLORS.border,
+  },
   actionsContainer: {
-    gap: 12,
-    marginBottom: SPACING.md,
+    gap: 10,
+    marginTop: 'auto',
   },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.lg,
     paddingVertical: 16,
-    gap: 8,
+    paddingHorizontal: 20,
+    gap: 10,
     ...SHADOWS.md,
   },
   primaryBtnText: {
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.textInverse,
+    letterSpacing: 0.2,
+  },
+  arrowCircle: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: COLORS.card,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   secondaryBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.card,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.lg,
     paddingVertical: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
+    gap: 8,
   },
   secondaryBtnText: {
     fontSize: 15,
     fontWeight: '600',
     color: COLORS.textSecondary,
   },
-  demoSection: {
-    marginTop: 8,
-    alignItems: 'center',
-  },
-  demoLabel: {
-    fontSize: 12,
-    fontWeight: '600',
+  footerNote: {
+    fontSize: 11,
     color: COLORS.textMuted,
-    marginBottom: 8,
-  },
-  demoRow: {
-    flexDirection: 'row',
-    gap: 8,
-    width: '100%',
-  },
-  demoBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.primaryLight,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    borderRadius: RADIUS.md,
-    paddingVertical: 10,
-    gap: 6,
-  },
-  demoBtnText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.primary,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });

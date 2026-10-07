@@ -21,11 +21,26 @@ export default function LoginScreen() {
   const router = useRouter();
   const { login, setDemoUser } = useAuth();
 
+  const [role, setRole] = useState<'candidate' | 'employer'>('candidate');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const activeColor = role === 'candidate' ? COLORS.primary : COLORS.secondary;
+  const activeLight = role === 'candidate' ? COLORS.primaryLight : COLORS.secondaryLight;
+
+  const handleRoleChange = (newRole: 'candidate' | 'employer') => {
+    setRole(newRole);
+    setErrorMessage(null);
+    // If the input was previous demo, clear or update
+    if (email === 'alex.dev@gmail.com' || email === 'recruiter@techcorp.com') {
+      setEmail('');
+      setPassword('');
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -45,16 +60,28 @@ export default function LoginScreen() {
     }
   };
 
-  const fillCandidateCreds = () => {
-    setEmail('alex.dev@gmail.com');
-    setPassword('Candidate@123');
+  const handleAutofillDemo = () => {
+    if (role === 'candidate') {
+      setEmail('alex.dev@gmail.com');
+      setPassword('Candidate@123');
+    } else {
+      setEmail('recruiter@techcorp.com');
+      setPassword('Employer@123');
+    }
     setErrorMessage(null);
   };
 
-  const fillEmployerCreds = () => {
-    setEmail('recruiter@techcorp.com');
-    setPassword('Employer@123');
+  const handleInstantDemoLogin = async () => {
+    setDemoLoading(true);
     setErrorMessage(null);
+    try {
+      await setDemoUser(role);
+      router.replace('/(tabs)');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Demo login failed.');
+    } finally {
+      setDemoLoading(false);
+    }
   };
 
   return (
@@ -63,7 +90,7 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scroll}>
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <TouchableOpacity
             style={styles.backBtn}
@@ -77,7 +104,54 @@ export default function LoginScreen() {
               <AppLogo size={46} />
             </View>
             <Text style={styles.title}>Welcome Back 👋</Text>
-            <Text style={styles.subtitle}>Sign in to your RonoJobs account</Text>
+            <Text style={styles.subtitle}>
+              {role === 'candidate'
+                ? 'Sign in to explore tech jobs & track applications'
+                : 'Sign in to manage job listings & candidate pipeline'}
+            </Text>
+          </View>
+
+          {/* Role Selector Tabs (Same style as Create Account) */}
+          <View style={styles.roleContainer}>
+            <TouchableOpacity
+              style={[styles.roleTab, role === 'candidate' && styles.roleTabActive]}
+              onPress={() => handleRoleChange('candidate')}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name="person"
+                size={18}
+                color={role === 'candidate' ? COLORS.primary : COLORS.textMuted}
+              />
+              <Text
+                style={[
+                  styles.roleTabText,
+                  role === 'candidate' && [styles.roleTabTextActive, { color: COLORS.primary }],
+                ]}
+              >
+                Candidate Sign In
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.roleTab, role === 'employer' && styles.roleTabActive]}
+              onPress={() => handleRoleChange('employer')}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name="business"
+                size={18}
+                color={role === 'employer' ? COLORS.secondary : COLORS.textMuted}
+              />
+              <Text
+                style={[
+                  styles.roleTabText,
+                  role === 'employer' && [styles.roleTabTextActive, { color: COLORS.secondary }],
+                ]}
+              >
+                Employer Sign In
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {errorMessage && (
@@ -90,12 +164,16 @@ export default function LoginScreen() {
           {/* Form */}
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address</Text>
+              <Text style={styles.label}>
+                {role === 'candidate' ? 'Candidate Email' : 'Work / Company Email'}
+              </Text>
               <View style={styles.inputContainer}>
                 <Ionicons name="mail-outline" size={18} color={COLORS.textSecondary} />
                 <TextInput
                   style={styles.input}
-                  placeholder="name@example.com"
+                  placeholder={
+                    role === 'candidate' ? 'alex.dev@gmail.com' : 'recruiter@techcorp.com'
+                  }
                   placeholderTextColor={COLORS.textMuted}
                   value={email}
                   onChangeText={setEmail}
@@ -128,31 +206,61 @@ export default function LoginScreen() {
             </View>
 
             <TouchableOpacity
-              style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
+              style={[styles.submitBtn, { backgroundColor: activeColor }, loading && styles.submitBtnDisabled]}
               onPress={handleLogin}
-              disabled={loading}
+              disabled={loading || demoLoading}
               activeOpacity={0.85}
             >
               {loading ? (
                 <ActivityIndicator color={COLORS.textInverse} size="small" />
               ) : (
-                <Text style={styles.submitBtnText}>Sign In</Text>
+                <Text style={styles.submitBtnText}>
+                  {role === 'candidate' ? 'Sign In as Candidate' : 'Sign In as Employer'}
+                </Text>
               )}
             </TouchableOpacity>
           </View>
 
-          {/* Quick autofill helpers */}
-          <View style={styles.quickFillContainer}>
-            <Text style={styles.quickFillTitle}>Quick Auto-Fill Demo Accounts:</Text>
-            <View style={styles.quickFillRow}>
-              <TouchableOpacity style={styles.quickFillBtn} onPress={fillCandidateCreds}>
-                <Text style={styles.quickFillText}>Candidate (Alex)</Text>
-              </TouchableOpacity>
+          {/* Quick Demo Card for Selected Role */}
+          <View style={styles.demoCard}>
+            <View style={styles.demoCardHeader}>
+              <View style={styles.demoBadge}>
+                <Ionicons name="flash" size={14} color={activeColor} />
+                <Text style={[styles.demoBadgeText, { color: activeColor }]}>
+                  {role === 'candidate' ? 'Candidate Demo' : 'Employer Demo'}
+                </Text>
+              </View>
+              <Text style={styles.demoCardSub}>Instant 1-Click Access</Text>
+            </View>
+
+            <View style={styles.demoButtonsRow}>
               <TouchableOpacity
-                style={[styles.quickFillBtn, { borderColor: COLORS.secondary }]}
-                onPress={fillEmployerCreds}
+                style={[styles.demoFillBtn, { borderColor: activeColor }]}
+                onPress={handleAutofillDemo}
+                activeOpacity={0.8}
               >
-                <Text style={[styles.quickFillText, { color: COLORS.secondary }]}>Employer (Recruiter)</Text>
+                <Ionicons name="create-outline" size={15} color={activeColor} />
+                <Text style={[styles.demoFillText, { color: activeColor }]}>
+                  Auto-Fill Credentials
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.demoInstantBtn, { backgroundColor: activeLight, borderColor: activeColor }]}
+                onPress={handleInstantDemoLogin}
+                disabled={demoLoading}
+                activeOpacity={0.8}
+              >
+                {demoLoading ? (
+                  <ActivityIndicator size="small" color={activeColor} />
+                ) : (
+                  <>
+                    <Ionicons name="log-in-outline" size={15} color={activeColor} />
+                    <Text style={[styles.demoInstantText, { color: activeColor }]}>
+                      1-Tap Demo Entry
+                    </Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -161,7 +269,7 @@ export default function LoginScreen() {
           <View style={styles.footerRow}>
             <Text style={styles.footerText}>Don't have an account? </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-              <Text style={styles.footerLink}>Create Account</Text>
+              <Text style={[styles.footerLink, { color: activeColor }]}>Create Account</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -191,7 +299,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   header: {
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.lg,
   },
   title: {
     fontSize: 28,
@@ -202,6 +310,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
     marginTop: 4,
+    lineHeight: 20,
+  },
+  roleContainer: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surface,
+    padding: 4,
+    borderRadius: RADIUS.lg,
+    marginBottom: SPACING.lg,
+  },
+  roleTab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: RADIUS.md,
+    gap: 8,
+  },
+  roleTabActive: {
+    backgroundColor: COLORS.card,
+    ...SHADOWS.sm,
+  },
+  roleTabText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.textMuted,
+  },
+  roleTabTextActive: {
+    fontWeight: '700',
   },
   errorBox: {
     flexDirection: 'row',
@@ -246,7 +383,6 @@ const styles = StyleSheet.create({
     color: COLORS.text,
   },
   submitBtn: {
-    backgroundColor: COLORS.primary,
     borderRadius: RADIUS.md,
     paddingVertical: 15,
     alignItems: 'center',
@@ -261,43 +397,73 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textInverse,
   },
-  quickFillContainer: {
+  demoCard: {
     marginTop: SPACING.xl,
     padding: SPACING.md,
     backgroundColor: COLORS.card,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
+    ...SHADOWS.sm,
   },
-  quickFillTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textMuted,
-    marginBottom: 8,
-  },
-  quickFillRow: {
+  demoCardHeader: {
     flexDirection: 'row',
-    gap: 8,
-  },
-  quickFillBtn: {
-    flex: 1,
-    paddingVertical: 8,
-    borderRadius: RADIUS.sm,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
+    justifyContent: 'space-between',
+    marginBottom: 12,
   },
-  quickFillText: {
+  demoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  demoBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  demoCardSub: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: '500',
+  },
+  demoButtonsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  demoFillBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    backgroundColor: COLORS.surface,
+    gap: 6,
+  },
+  demoFillText: {
     fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.primary,
+    fontWeight: '700',
+  },
+  demoInstantBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    gap: 6,
+  },
+  demoInstantText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 'auto',
-    paddingVertical: SPACING.lg,
+    marginTop: SPACING.xl,
+    paddingVertical: SPACING.sm,
   },
   footerText: {
     fontSize: 14,
@@ -306,6 +472,5 @@ const styles = StyleSheet.create({
   footerLink: {
     fontSize: 14,
     fontWeight: '700',
-    color: COLORS.primary,
   },
 });
