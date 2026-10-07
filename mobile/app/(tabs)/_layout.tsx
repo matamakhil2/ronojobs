@@ -30,9 +30,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Jobs',
+          title: isEmployer ? 'Dashboard' : 'Jobs',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="briefcase-outline" size={size} color={color} />
+            <Ionicons name={isEmployer ? 'briefcase' : 'briefcase-outline'} size={size} color={color} />
           ),
         }}
       />
@@ -48,9 +48,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="saved"
         options={{
-          title: 'Saved',
+          title: isEmployer ? 'Post Job' : 'Saved',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bookmark-outline" size={size} color={color} />
+            <Ionicons
+              name={isEmployer ? 'add-circle-outline' : 'bookmark-outline'}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -59,7 +63,11 @@ export default function TabLayout() {
         options={{
           title: isEmployer ? 'Applicants' : 'Applications',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="paper-plane-outline" size={size} color={color} />
+            <Ionicons
+              name={isEmployer ? 'people-outline' : 'paper-plane-outline'}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />

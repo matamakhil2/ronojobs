@@ -87,16 +87,16 @@ export default function SavedJobsScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.authPrompt}>
-          <Ionicons name="briefcase-outline" size={54} color={COLORS.primary} />
-          <Text style={styles.authTitle}>Employer Account</Text>
+          <Ionicons name="add-circle-outline" size={56} color={COLORS.secondary} />
+          <Text style={styles.authTitle}>Post a New Job Opening</Text>
           <Text style={styles.authSubtitle}>
-            Saved jobs bookmarks are for candidates. Head over to your Employer Dashboard to manage your posted jobs and review applicants.
+            Create new job listings, define role requirements, set compensation packages, and start receiving applications immediately.
           </Text>
           <TouchableOpacity
-            style={styles.signInBtn}
-            onPress={() => router.push('/employer')}
+            style={[styles.signInBtn, { backgroundColor: COLORS.secondary }]}
+            onPress={() => router.push('/employer/post-job')}
           >
-            <Text style={styles.signInBtnText}>Go to Employer Dashboard</Text>
+            <Text style={styles.signInBtnText}>+ Create New Job Listing</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

@@ -136,6 +136,21 @@ export default function JobDetailsScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Employer Notice Banner */}
+        {isEmployer && (
+          <View style={styles.employerNoticeBanner}>
+            <View style={styles.employerNoticeIconBox}>
+              <Ionicons name="business" size={18} color={COLORS.secondary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.employerNoticeTitle}>Employer Recruiter View</Text>
+              <Text style={styles.employerNoticeSub}>
+                Viewing as an employer. You cannot submit applications to job listings.
+              </Text>
+            </View>
+          </View>
+        )}
+
         {/* Top Header Card */}
         <View style={styles.heroCard}>
           <View style={styles.companyRow}>
@@ -216,31 +231,55 @@ export default function JobDetailsScreen() {
 
       {/* Sticky Bottom Actions Bar */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={[styles.saveActionBtn, isSaved && styles.saveActionBtnActive]}
-          onPress={handleToggleSave}
-        >
-          <Ionicons
-            name={isSaved ? 'bookmark' : 'bookmark-outline'}
-            size={22}
-            color={isSaved ? COLORS.textInverse : COLORS.text}
-          />
-        </TouchableOpacity>
+        {isEmployer ? (
+          <View style={styles.employerBottomBar}>
+            <TouchableOpacity
+              style={styles.employerHubBtn}
+              onPress={() => router.push('/employer')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="apps-outline" size={18} color={COLORS.textSecondary} />
+              <Text style={styles.employerHubBtnText}>Employer Hub</Text>
+            </TouchableOpacity>
 
-        {hasApplied ? (
-          <View style={styles.alreadyAppliedBtn}>
-            <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
-            <Text style={styles.alreadyAppliedText}>Application Submitted</Text>
+            <TouchableOpacity
+              style={styles.employerActionBtn}
+              onPress={() => router.push(`/employer/applicants/${job.id}`)}
+              activeOpacity={0.88}
+            >
+              <Ionicons name="people" size={18} color={COLORS.textInverse} />
+              <Text style={styles.employerActionText}>View Applicants</Text>
+            </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity
-            style={styles.applyActionBtn}
-            onPress={handleApplyClick}
-            activeOpacity={0.88}
-          >
-            <Text style={styles.applyActionText}>Apply Now</Text>
-            <Ionicons name="paper-plane" size={18} color={COLORS.textInverse} />
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={[styles.saveActionBtn, isSaved && styles.saveActionBtnActive]}
+              onPress={handleToggleSave}
+            >
+              <Ionicons
+                name={isSaved ? 'bookmark' : 'bookmark-outline'}
+                size={22}
+                color={isSaved ? COLORS.textInverse : COLORS.text}
+              />
+            </TouchableOpacity>
+
+            {hasApplied ? (
+              <View style={styles.alreadyAppliedBtn}>
+                <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+                <Text style={styles.alreadyAppliedText}>Application Submitted</Text>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.applyActionBtn}
+                onPress={handleApplyClick}
+                activeOpacity={0.88}
+              >
+                <Text style={styles.applyActionText}>Apply Now</Text>
+                <Ionicons name="paper-plane" size={18} color={COLORS.textInverse} />
+              </TouchableOpacity>
+            )}
+          </>
         )}
       </View>
 
@@ -469,5 +508,74 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: COLORS.success,
+  },
+  employerNoticeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.secondaryLight,
+    padding: 12,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+    marginBottom: SPACING.md,
+    gap: 10,
+  },
+  employerNoticeIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  employerNoticeTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.secondary,
+  },
+  employerNoticeSub: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  employerBottomBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  employerHubBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: 6,
+  },
+  employerHubBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+  },
+  employerActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.secondary,
+    paddingVertical: 14,
+    borderRadius: RADIUS.md,
+    gap: 8,
+    ...SHADOWS.md,
+  },
+  employerActionText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.textInverse,
   },
 });
