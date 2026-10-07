@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
@@ -43,9 +43,11 @@ export default function SavedJobsScreen() {
     }
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    fetchSaved();
-  }, [fetchSaved]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchSaved();
+    }, [fetchSaved])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
