@@ -10,7 +10,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
@@ -56,9 +56,11 @@ export default function HomeScreen() {
     }
   }, [selectedCategory]);
 
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchJobs();
+    }, [fetchJobs])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -143,7 +145,12 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={styles.filterBtn}
-            onPress={() => router.push('/(tabs)/search')}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/search',
+                params: searchQuery.trim() ? { q: searchQuery.trim() } : {},
+              })
+            }
           >
             <Ionicons name="options-outline" size={20} color={COLORS.textInverse} />
           </TouchableOpacity>

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { jobsApi } from '../../src/services/api';
@@ -29,6 +29,26 @@ export default function SearchScreen() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Sync when searchParams.q changes from outside (e.g. from Home search bar)
+  useEffect(() => {
+    if (searchParams.q !== undefined && searchParams.q !== searchInput) {
+      setSearchInput(searchParams.q);
+      setFilters((prev) => ({ ...prev, q: searchParams.q }));
+    }
+  }, [searchParams.q]);
+
+  // Live debounced search as user types
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters((prev) => {
+        const trimmed = searchInput.trim();
+        if (prev.q === trimmed) return prev;
+        return { ...prev, q: trimmed };
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const fetchFilteredJobs = useCallback(async (currentFilters: JobFilters) => {
     setLoading(true);
     try {
@@ -42,9 +62,11 @@ export default function SearchScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchFilteredJobs(filters);
-  }, [filters, fetchFilteredJobs]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchFilteredJobs(filters);
+    }, [fetchFilteredJobs, filters])
+  );
 
   const handleSearchSubmit = () => {
     setFilters((prev) => ({ ...prev, q: searchInput.trim() }));

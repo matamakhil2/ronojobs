@@ -9,7 +9,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { employerApi, applicationsApi } from '../../../src/services/api';
@@ -41,9 +41,11 @@ export default function ApplicantsScreen() {
     }
   }, [jobId]);
 
-  useEffect(() => {
-    fetchApplicants();
-  }, [fetchApplicants]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchApplicants();
+    }, [fetchApplicants])
+  );
 
   const handleUpdateStatus = async (appId: string, newStatus: ApplicationStatus) => {
     setUpdatingId(appId);
