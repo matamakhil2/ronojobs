@@ -81,7 +81,7 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
-function renderHighResLogo(size, paddingRatio = 0.08) {
+function renderHighResLogo(size, paddingRatio = 0.08, bgColor = null) {
   const buf = Buffer.alloc(size * size * 4);
 
   // The glyph coordinates in the original 39x39 reference grid:
@@ -184,17 +184,27 @@ function renderHighResLogo(size, paddingRatio = 0.08) {
         }
       }
 
-      if (accA > 0) {
+      if (accA > 0 || bgColor) {
         const outA = accA / 16.0;
-        const outR = Math.round(accR / accA);
-        const outG = Math.round(accG / accA);
-        const outB = Math.round(accB / accA);
+        let outR = accA > 0 ? Math.round(accR / accA) : 0;
+        let outG = accA > 0 ? Math.round(accG / accA) : 0;
+        let outB = accA > 0 ? Math.round(accB / accA) : 0;
 
         const idx = (y * size + x) * 4;
-        buf[idx] = outR;
-        buf[idx + 1] = outG;
-        buf[idx + 2] = outB;
-        buf[idx + 3] = Math.round(outA * 255);
+        if (bgColor) {
+          outR = Math.round(lerp(bgColor[0], outR, outA));
+          outG = Math.round(lerp(bgColor[1], outG, outA));
+          outB = Math.round(lerp(bgColor[2], outB, outA));
+          buf[idx] = outR;
+          buf[idx + 1] = outG;
+          buf[idx + 2] = outB;
+          buf[idx + 3] = 255;
+        } else if (outA > 0) {
+          buf[idx] = outR;
+          buf[idx + 1] = outG;
+          buf[idx + 2] = outB;
+          buf[idx + 3] = Math.round(outA * 255);
+        }
       }
     }
   }
@@ -203,11 +213,16 @@ function renderHighResLogo(size, paddingRatio = 0.08) {
 }
 
 console.log('Rendering 1024x1024 crystal-clear anti-aliased assets...');
-const logoPng = renderHighResLogo(1024, 0.06);
-const iconPng = renderHighResLogo(1024, 0.10);
-const adaptivePng = renderHighResLogo(1024, 0.22); // Android adaptive icon safe zone
-const splashPng = renderHighResLogo(1024, 0.15);
-const faviconPng = renderHighResLogo(256, 0.06);
+// In-app logo: transparent, crisp margin
+const logoPng = renderHighResLogo(1024, 0.05, null);
+// App icon: full-bleed white background (prevents Android/iOS gray squircle fallback)
+const iconPng = renderHighResLogo(1024, 0.16, [255, 255, 255]);
+// Android adaptive icon foreground (66% safe zone, transparent background)
+const adaptivePng = renderHighResLogo(1024, 0.22, null);
+// Splash screen icon (transparent background)
+const splashPng = renderHighResLogo(1024, 0.18, null);
+// Web Favicon
+const faviconPng = renderHighResLogo(256, 0.06, null);
 
 fs.writeFileSync('d:/Ronojobs/mobile/assets/logo.png', logoPng);
 fs.writeFileSync('d:/Ronojobs/mobile/assets/icon.png', iconPng);
