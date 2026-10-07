@@ -213,12 +213,25 @@ function renderHighResLogo(size, paddingRatio = 0.08, bgColor = null) {
 }
 
 console.log('Rendering 1024x1024 crystal-clear anti-aliased assets...');
-// The exact inner logo: 1024x1024, crisp padding, transparent background
+// 1. In-app logo: transparent, fills container nicely
 const logoPng = renderHighResLogo(1024, 0.08, null);
 
+// 2. Android adaptive icon: centered strictly within the 66% safe zone (paddingRatio = 0.26)
+// This guarantees the entire 3-pill logo sits completely INSIDE the white box without overflowing or sticking out!
+const adaptivePng = renderHighResLogo(1024, 0.26, null);
+
+// 3. Splash screen icon: transparent background, neatly proportioned
+const splashPng = renderHighResLogo(1024, 0.26, null);
+
+// 4. App Store / Launcher icon: clean solid white background with comfortable padding
+const iconPng = renderHighResLogo(1024, 0.22, [255, 255, 255]);
+
+// 5. Web Favicon
+const faviconPng = renderHighResLogo(256, 0.08, null);
+
 fs.writeFileSync('d:/Ronojobs/mobile/assets/logo.png', logoPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/splash-icon.png', logoPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/icon.png', logoPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/adaptive-icon.png', logoPng);
-fs.writeFileSync('d:/Ronojobs/mobile/assets/favicon.png', logoPng);
-console.log('Successfully saved identical inner logo across all assets!');
+fs.writeFileSync('d:/Ronojobs/mobile/assets/adaptive-icon.png', adaptivePng);
+fs.writeFileSync('d:/Ronojobs/mobile/assets/splash-icon.png', splashPng);
+fs.writeFileSync('d:/Ronojobs/mobile/assets/icon.png', iconPng);
+fs.writeFileSync('d:/Ronojobs/mobile/assets/favicon.png', faviconPng);
+console.log('Successfully saved safe-zone aligned assets!');
