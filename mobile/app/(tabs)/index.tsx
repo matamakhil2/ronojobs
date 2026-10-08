@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,9 +23,13 @@ import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { width: windowWidth } = useWindowDimensions();
   const { user } = useAuth();
   const isEmployer = user?.role === 'employer';
   const isCandidateLoggedIn = !!user && !isEmployer;
+
+  const sliderRef = useRef<ScrollView>(null);
+  const [sliderScrollX, setSliderScrollX] = useState(0);
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -178,8 +183,57 @@ export default function HomeScreen() {
     return list;
   }, [employerJobs, searchQuery]);
 
-  // Derive "Jobs You Might Like" from existing fetched jobs (Candidate logged in)
-  const jobsYouMightLike = useMemo(() => {
+  // Responsive card width and scroll step for Section 1 Slider
+  const sliderCardWidth = useMemo(() => {
+    if (windowWidth >= 1024) return 360;
+    if (windowWidth >= 768) return 330;
+    return Math.min(320, windowWidth * 0.82);
+  }, [windowWidth]);
+
+  const sliderStep = sliderCardWidth + 12;
+
+  const handleSlideLeft = () => {
+    const targetX = Math.max(0, sliderScrollX - sliderStep);
+    sliderRef.current?.scrollTo({ x: targetX, animated: true });
+  };
+
+  const handleSlideRight = () => {
+    const targetX = sliderScrollX + sliderStep;
+    sliderRef.current?.scrollTo({ x: targetX, animated: true });
+  };
+
+  // SECTION 1: "Jobs You Might Like" (Horizontal Slider)
+  const sliderJobs = useMemo(() => {
+    if (!isCandidateLoggedIn || jobs.length === 0) return [];
+
+    const candidateProfile = user?.profile as CandidateProfile | undefined;
+    const candidateSkills = (candidateProfile?.skills || []).map((s) => s.toLowerCase().trim()).filter(Boolean);
+    const candidateHeadline = candidateProfile?.headline?.toLowerCase().trim() || '';
+
+    // Prioritize jobs by simple matching or top positions
+    const sorted = [...jobs].sort((a, b) => {
+      let scoreA = 0;
+      let scoreB = 0;
+      if (candidateSkills.length > 0) {
+        if (Array.isArray(a.skills)) {
+          scoreA += a.skills.filter((s) => candidateSkills.some((cs) => s.toLowerCase().includes(cs))).length;
+        }
+        if (Array.isArray(b.skills)) {
+          scoreB += b.skills.filter((s) => candidateSkills.some((cs) => s.toLowerCase().includes(cs))).length;
+        }
+      }
+      if (candidateHeadline) {
+        if (a.title && candidateHeadline.includes(a.title.toLowerCase())) scoreA += 2;
+        if (b.title && candidateHeadline.includes(b.title.toLowerCase())) scoreB += 2;
+      }
+      return scoreB - scoreA;
+    });
+
+    return sorted.slice(0, 6);
+  }, [jobs, isCandidateLoggedIn, user]);
+
+  // SECTION 2: "Jobs Related to Your Profile" (Preserved existing vertical list logic)
+  const jobsRelatedToProfile = useMemo(() => {
     if (!isCandidateLoggedIn || jobs.length === 0) return [];
 
     const candidateProfile = user?.profile as CandidateProfile | undefined;
@@ -612,12 +666,75 @@ export default function HomeScreen() {
               </ScrollView>
             </View>
 
-            {/* Jobs You Might Like Section (Candidate Logged In) */}
-            {isCandidateLoggedIn && !searchQuery.trim() && jobsYouMightLike.length > 0 && (
+            {/* SECTION 1: Jobs You Might Like (Horizontal Slider) */}
+            {isCandidateLoggedIn && !searchQuery.trim() && sliderJobs.length > 0 && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeaderRow}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
+                    <Text style={styles.sectionTitle}>Jobs You Might Like ✨</Text>
+                    <Text style={styles.sectionSubtitle}>
+                      Explore handpicked opportunities tailored for you
+                    </Text>
+                  </View>
+                  <View style={styles.sliderControls}>
+                    <TouchableOpacity
+                      style={[
+                        styles.sliderNavBtn,
+                        sliderScrollX <= 5 && styles.sliderNavBtnDisabled,
+                      ]}
+                      onPress={handleSlideLeft}
+                      disabled={sliderScrollX <= 5}
+                      accessibilityLabel="Previous jobs"
+                    >
+                      <Ionicons
+                        name="chevron-back"
+                        size={18}
+                        color={sliderScrollX <= 5 ? COLORS.textMuted : COLORS.primary}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.sliderNavBtn}
+                      onPress={handleSlideRight}
+                      accessibilityLabel="Next jobs"
+                    >
+                      <Ionicons name="chevron-forward" size={18} color={COLORS.primary} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <ScrollView
+                  ref={sliderRef}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.sliderContent}
+                  snapToInterval={sliderStep}
+                  decelerationRate="fast"
+                  onScroll={(e) => setSliderScrollX(e.nativeEvent.contentOffset.x)}
+                  scrollEventThrottle={16}
+                >
+                  {sliderJobs.map((job) => (
+                    <View
+                      key={`slider-${job.id}`}
+                      style={{ width: sliderCardWidth, marginRight: 12 }}
+                    >
+                      <JobCard
+                        job={job}
+                        onPress={() => router.push(`/job/${job.id}`)}
+                        onSaveToggle={() => handleToggleSave(job.id, job.is_saved)}
+                        isSaved={job.is_saved}
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            {/* SECTION 2: Jobs Related to Your Profile (Preserved layout, renamed) */}
+            {isCandidateLoggedIn && !searchQuery.trim() && jobsRelatedToProfile.length > 0 && (
               <View style={styles.section}>
                 <View style={styles.sectionHeaderRow}>
                   <View>
-                    <Text style={styles.sectionTitle}>Jobs You Might Like ✨</Text>
+                    <Text style={styles.sectionTitle}>Jobs Related to Your Profile</Text>
                     <Text style={styles.sectionSubtitle}>
                       Curated roles based on your profile & skills
                     </Text>
@@ -627,9 +744,9 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 </View>
 
-                {jobsYouMightLike.map((job) => (
+                {jobsRelatedToProfile.map((job) => (
                   <JobCard
-                    key={`might-like-${job.id}`}
+                    key={`profile-rel-${job.id}`}
                     job={job}
                     onPress={() => router.push(`/job/${job.id}`)}
                     onSaveToggle={() => handleToggleSave(job.id, job.is_saved)}
@@ -968,6 +1085,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textSecondary,
     marginTop: 2,
+  },
+  sliderControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sliderNavBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.sm,
+  },
+  sliderNavBtnDisabled: {
+    opacity: 0.45,
+    backgroundColor: COLORS.surface,
+  },
+  sliderContent: {
+    paddingVertical: 4,
+    paddingRight: SPACING.xs,
   },
   jobCountText: {
     fontSize: 13,
