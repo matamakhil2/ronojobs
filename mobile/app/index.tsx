@@ -25,9 +25,9 @@ export default function SplashScreen() {
         bounces={false}
       >
         {/* Top Brand Hero */}
-        <View style={styles.heroContent}>
+        <View style={styles.heroSection}>
           <View style={styles.logoBadge}>
-            <AppLogo size={56} />
+            <AppLogo size={60} />
           </View>
 
           <Text style={styles.brandTitle}>
@@ -41,66 +41,53 @@ export default function SplashScreen() {
           <Text style={styles.tagline}>
             Explore thousands of verified engineering, design, and remote roles from top tech employers.
           </Text>
-        </View>
 
-        {/* Value Proposition Cards (Reflecting the 3 brand logo colors: Purple, Orange, Blue) */}
-        <View style={styles.valueSection}>
-          <View style={styles.valueCard}>
-            <View style={[styles.valueIconBox, { backgroundColor: COLORS.primaryLight }]}>
-              <Ionicons name="briefcase" size={20} color={COLORS.primary} />
+          {/* Clean minimal highlight pills */}
+          <View style={styles.pillRow}>
+            <View style={styles.pillBadge}>
+              <Ionicons name="flash" size={13} color={COLORS.accent} />
+              <Text style={styles.pillText}>Fast-Track Hiring</Text>
             </View>
-            <View style={styles.valueTextBox}>
-              <Text style={styles.valueTitle}>Vetted Tech Opportunities</Text>
-              <Text style={styles.valueDesc}>
-                Direct roles from innovative startups and global tech leaders.
-              </Text>
+            <View style={styles.pillBadge}>
+              <Ionicons name="shield-checkmark" size={13} color={COLORS.secondary} />
+              <Text style={styles.pillText}>Verified Companies</Text>
             </View>
-          </View>
-
-          <View style={styles.valueCard}>
-            <View style={[styles.valueIconBox, { backgroundColor: COLORS.warningLight }]}>
-              <Ionicons name="flash" size={20} color={COLORS.accent} />
-            </View>
-            <View style={styles.valueTextBox}>
-              <Text style={styles.valueTitle}>Real-Time Status Tracking</Text>
-              <Text style={styles.valueDesc}>
-                Never wonder about your application status with live hiring stages.
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.valueCard}>
-            <View style={[styles.valueIconBox, { backgroundColor: COLORS.secondaryLight }]}>
-              <Ionicons name="shield-checkmark" size={20} color={COLORS.secondary} />
-            </View>
-            <View style={styles.valueTextBox}>
-              <Text style={styles.valueTitle}>Direct Hiring Pipeline</Text>
-              <Text style={styles.valueDesc}>
-                Connect directly with verified hiring managers and founders.
-              </Text>
+            <View style={styles.pillBadge}>
+              <Ionicons name="globe-outline" size={13} color={COLORS.primary} />
+              <Text style={styles.pillText}>Remote Friendly</Text>
             </View>
           </View>
         </View>
 
-        {/* Quick Platform Metrics */}
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>10k+</Text>
-            <Text style={styles.statLabel}>Active Jobs</Text>
+        {/* Prominent Active Jobs & Market Stats Card (User's preferred focal point) */}
+        <View style={styles.metricsCard}>
+          <View style={styles.metricsHeader}>
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>LIVE MARKETPLACE</Text>
+            </View>
+            <Text style={styles.metricsHeaderSub}>Updated in real-time</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>500+</Text>
-            <Text style={styles.statLabel}>Top Companies</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>98%</Text>
-            <Text style={styles.statLabel}>Response Rate</Text>
+
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>10k+</Text>
+              <Text style={styles.statLabel}>Active Jobs</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: COLORS.secondary }]}>500+</Text>
+              <Text style={styles.statLabel}>Top Companies</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: COLORS.accent }]}>98%</Text>
+              <Text style={styles.statLabel}>Response Rate</Text>
+            </View>
           </View>
         </View>
 
-        {/* Action Buttons Section */}
+        {/* Action Buttons */}
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={styles.primaryBtn}
@@ -140,17 +127,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
-  heroContent: {
+  heroSection: {
     alignItems: 'center',
-    marginTop: SPACING.sm,
+    marginTop: SPACING.xs,
   },
   logoBadge: {
-    width: 84,
-    height: 84,
-    borderRadius: 22,
+    width: 88,
+    height: 88,
+    borderRadius: 24,
     backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -179,75 +166,96 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
     lineHeight: 19,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.sm,
   },
-  valueSection: {
-    marginVertical: SPACING.md,
-    gap: 10,
+  pillRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: SPACING.lg,
   },
-  valueCard: {
+  pillBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.card,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
-    gap: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: RADIUS.full,
+    gap: 6,
     ...SHADOWS.sm,
   },
-  valueIconBox: {
-    width: 42,
-    height: 42,
-    borderRadius: RADIUS.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  valueTextBox: {
-    flex: 1,
-  },
-  valueTitle: {
-    fontSize: 14,
-    fontWeight: '700',
+  pillText: {
+    fontSize: 12,
+    fontWeight: '600',
     color: COLORS.text,
   },
-  valueDesc: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-    lineHeight: 16,
+  metricsCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginVertical: SPACING.lg,
+    ...SHADOWS.sm,
+  },
+  metricsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.md,
+    paddingBottom: SPACING.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderLight,
+  },
+  liveIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  liveDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.success,
+  },
+  liveText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: COLORS.success,
+    letterSpacing: 0.5,
+  },
+  metricsHeaderSub: {
+    fontSize: 11,
+    color: COLORS.textMuted,
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.lg,
+    paddingVertical: 4,
   },
   statItem: {
     alignItems: 'center',
     flex: 1,
   },
   statNumber: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: '800',
     color: COLORS.primary,
+    letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 11,
     color: COLORS.textSecondary,
-    marginTop: 2,
-    fontWeight: '500',
+    marginTop: 3,
+    fontWeight: '600',
   },
   statDivider: {
     width: 1,
-    height: 24,
+    height: 32,
     backgroundColor: COLORS.border,
   },
   actionsContainer: {
