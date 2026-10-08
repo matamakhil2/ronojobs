@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Job } from '../types';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from './StatusBadge';
+import { CompanyImage } from './CompanyImage';
 
 interface JobCardProps {
   job: Job;
@@ -28,8 +29,6 @@ export const JobCard: React.FC<JobCardProps> = ({
     return 'Competitive';
   };
 
-  const companyInitial = job.company_name ? job.company_name.charAt(0).toUpperCase() : 'J';
-
   return (
     <TouchableOpacity
       style={styles.card}
@@ -39,17 +38,12 @@ export const JobCard: React.FC<JobCardProps> = ({
       {/* Header: Company Logo, Title, Bookmark */}
       <View style={styles.header}>
         <View style={styles.companyRow}>
-          {job.company_logo ? (
-            <Image
-              source={{ uri: job.company_logo }}
-              style={styles.logo}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.logoFallback}>
-              <Text style={styles.logoFallbackText}>{companyInitial}</Text>
-            </View>
-          )}
+          <CompanyImage
+            uri={job.company_logo}
+            companyName={job.company_name}
+            size={46}
+            borderRadius={RADIUS.md}
+          />
 
           <View style={styles.titleContainer}>
             <Text style={styles.title} numberOfLines={1}>

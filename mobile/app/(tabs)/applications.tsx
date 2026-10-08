@@ -52,6 +52,7 @@ export default function ApplicationsScreen() {
                 candidate_name: item.candidate_name || item.full_name || 'Anonymous Candidate',
                 candidate_email: item.candidate_email || item.email || '',
                 headline: item.headline || '',
+                company_logo: job.company_logo || item.company_logo,
               }));
             } catch {
               return [];
@@ -206,6 +207,7 @@ const FALLBACK_APPLICATIONS: Application[] = [
     experience_level: 'Senior',
     job_status: 'open',
     company_name: 'CloudScale Technologies',
+    company_logo: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200&auto=format&fit=crop&q=80',
   },
   {
     id: 'a2',
@@ -221,6 +223,7 @@ const FALLBACK_APPLICATIONS: Application[] = [
     experience_level: 'Senior',
     job_status: 'open',
     company_name: 'PayPulse Global',
+    company_logo: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=200&auto=format&fit=crop&q=80',
   },
 ];
 

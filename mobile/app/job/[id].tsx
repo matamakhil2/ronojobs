@@ -15,6 +15,7 @@ import { Job } from '../../src/types';
 import { useAuth } from '../../src/context/AuthContext';
 import { ApplyModal } from '../../src/components/ApplyModal';
 import { StatusBadge } from '../../src/components/StatusBadge';
+import { CompanyImage } from '../../src/components/CompanyImage';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function JobDetailsScreen() {
@@ -154,11 +155,12 @@ export default function JobDetailsScreen() {
         {/* Top Header Card */}
         <View style={styles.heroCard}>
           <View style={styles.companyRow}>
-            <View style={styles.logoBadge}>
-              <Text style={styles.logoText}>
-                {job.company_name ? job.company_name.charAt(0).toUpperCase() : 'J'}
-              </Text>
-            </View>
+            <CompanyImage
+              uri={job.company_logo}
+              companyName={job.company_name}
+              size={54}
+              borderRadius={RADIUS.lg}
+            />
 
             <View style={styles.heroMeta}>
               <Text style={styles.companyName}>{job.company_name}</Text>

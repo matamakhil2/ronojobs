@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Application, ApplicationStatus } from '../types';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from './StatusBadge';
+import { CompanyImage } from './CompanyImage';
 
 interface ApplicationCardProps {
   application: Application;
@@ -63,13 +64,21 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     >
       {/* Top Header */}
       <View style={styles.header}>
-        <View style={styles.jobInfo}>
-          <Text style={styles.jobTitle} numberOfLines={1}>
-            {displayTitle}
-          </Text>
-          <Text style={styles.companyName}>
-            {displaySubtitle}
-          </Text>
+        <View style={styles.companyRow}>
+          <CompanyImage
+            uri={application.company_logo}
+            companyName={application.company_name}
+            size={42}
+            borderRadius={RADIUS.md}
+          />
+          <View style={styles.jobInfo}>
+            <Text style={styles.jobTitle} numberOfLines={1}>
+              {displayTitle}
+            </Text>
+            <Text style={styles.companyName} numberOfLines={1}>
+              {displaySubtitle}
+            </Text>
+          </View>
         </View>
 
         <StatusBadge status={application.status} />
@@ -176,9 +185,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 8,
   },
-  jobInfo: {
+  companyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
     marginRight: SPACING.sm,
+    gap: 10,
+  },
+  jobInfo: {
+    flex: 1,
   },
   jobTitle: {
     fontSize: 16,

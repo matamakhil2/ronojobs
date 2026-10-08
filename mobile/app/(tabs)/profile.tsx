@@ -16,6 +16,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { profileApi } from '../../src/services/api';
 import { CandidateProfile, CompanyProfile } from '../../src/types';
 import { AppLogo, AppBrand } from '../../src/components/AppLogo';
+import { CompanyImage } from '../../src/components/CompanyImage';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function ProfileScreen() {
@@ -145,13 +146,18 @@ export default function ProfileScreen() {
         {/* Profile Card Header */}
         <View style={styles.profileCard}>
           <View style={styles.avatarRow}>
-            <View style={[styles.avatar, { backgroundColor: roleLight }]}>
-              <Text style={[styles.avatarText, { color: roleColor }]}>
-                {isCandidate
-                  ? (fullName || 'U').charAt(0).toUpperCase()
-                  : (companyName || 'C').charAt(0).toUpperCase()}
-              </Text>
-            </View>
+            {isCandidate ? (
+              <View style={[styles.avatar, { backgroundColor: roleLight }]}>
+                <Ionicons name="person" size={26} color={roleColor} />
+              </View>
+            ) : (
+              <CompanyImage
+                uri={(user?.profile as CompanyProfile)?.logo_url}
+                companyName={companyName}
+                size={54}
+                borderRadius={RADIUS.full}
+              />
+            )}
 
             <View style={styles.avatarMeta}>
               <Text style={styles.profileName}>
