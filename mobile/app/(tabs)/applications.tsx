@@ -35,16 +35,30 @@ export default function ApplicationsScreen() {
 
     try {
       if (isEmployer) {
-        // For employer, fetch applications for their primary job
+        // For employer, fetch applications across all their posted jobs
         const employerJobs = await employerApi.getJobs();
         if (employerJobs.data && employerJobs.data.length > 0) {
-          const firstJobId = employerJobs.data[0].id;
-          const appsRes = await employerApi.getApplicants(firstJobId);
-          const list = (appsRes.data || []).map((item: any, idx: number) => ({
-            ...item,
-            id: item.id || item.application_id || `employer-app-${idx}`,
-          }));
-          setApplications(list);
+          const allAppsPromises = employerJobs.data.map(async (job: any) => {
+            try {
+              const appsRes = await employerApi.getApplicants(job.id);
+              return (appsRes.data || []).map((item: any, idx: number) => ({
+                ...item,
+                id: item.id || item.application_id || `employer-app-${job.id}-${idx}`,
+                job_id: job.id,
+                job_title: job.title || item.job_title || 'Job Opening',
+                company_name: `Applicant: ${item.candidate_name || item.full_name || item.candidate_email || 'Candidate'}`,
+                job_location: item.location || job.location || 'Remote',
+                employment_type: job.employment_type || item.employment_type || 'Full-time',
+                candidate_name: item.candidate_name || item.full_name || 'Anonymous Candidate',
+                candidate_email: item.candidate_email || item.email || '',
+                headline: item.headline || '',
+              }));
+            } catch {
+              return [];
+            }
+          });
+          const allResults = await Promise.all(allAppsPromises);
+          setApplications(allResults.flat());
         } else {
           setApplications([]);
         }
@@ -161,6 +175,7 @@ export default function ApplicationsScreen() {
             <ApplicationCard
               key={app.id || (app as any).application_id || `app-card-${idx}`}
               application={app}
+              activeColor={isEmployer ? COLORS.secondary : COLORS.primary}
               onPress={() => {
                 if (isEmployer) {
                   router.push(`/employer/applicants/${app.job_id}`);

@@ -8,11 +8,13 @@ import { StatusBadge } from './StatusBadge';
 interface ApplicationCardProps {
   application: Application;
   onPress?: () => void;
+  activeColor?: string;
 }
 
 export const ApplicationCard: React.FC<ApplicationCardProps> = ({
   application,
   onPress,
+  activeColor = COLORS.primary,
 }) => {
   const steps: ApplicationStatus[] = ['Applied', 'Shortlisted', 'Interview', 'Selected'];
   const isRejected = application.status === 'Rejected';
@@ -45,6 +47,14 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     year: 'numeric',
   });
 
+  const displayTitle =
+    application.job_title || (application as any).candidate_name || 'Job Opportunity';
+  const displaySubtitle =
+    [application.company_name, application.job_location].filter(Boolean).join(' • ') ||
+    (application as any).headline ||
+    (application as any).candidate_email ||
+    'Application Submission';
+
   return (
     <TouchableOpacity
       style={styles.card}
@@ -55,10 +65,10 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
       <View style={styles.header}>
         <View style={styles.jobInfo}>
           <Text style={styles.jobTitle} numberOfLines={1}>
-            {application.job_title}
+            {displayTitle}
           </Text>
           <Text style={styles.companyName}>
-            {application.company_name} • {application.job_location}
+            {displaySubtitle}
           </Text>
         </View>
 
@@ -73,7 +83,9 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
         </View>
 
         {application.employment_type && (
-          <Text style={styles.typeText}>{application.employment_type}</Text>
+          <Text style={[styles.typeText, { color: activeColor }]}>
+            {application.employment_type}
+          </Text>
         )}
       </View>
 
@@ -90,7 +102,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   style={[
                     styles.stepDot,
                     state === 'completed' && styles.stepDotCompleted,
-                    state === 'active' && styles.stepDotActive,
+                    state === 'active' && [styles.stepDotActive, { backgroundColor: activeColor }],
                     state === 'upcoming' && styles.stepDotUpcoming,
                   ]}
                 >
@@ -103,7 +115,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 <Text
                   style={[
                     styles.stepLabel,
-                    state === 'active' && styles.stepLabelActive,
+                    state === 'active' && [styles.stepLabelActive, { color: activeColor }],
                     state === 'completed' && styles.stepLabelCompleted,
                   ]}
                   numberOfLines={1}
@@ -116,7 +128,10 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 <View
                   style={[
                     styles.stepLine,
-                    (state === 'completed' || state === 'active') && styles.stepLineFilled,
+                    state === 'completed' && [
+                      styles.stepLineFilled,
+                      { backgroundColor: activeColor },
+                    ],
                   ]}
                 />
               )}
@@ -246,7 +261,7 @@ const styles = StyleSheet.create({
   stepLine: {
     flex: 1,
     height: 2,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.border,
     marginHorizontal: -4,
     marginBottom: 16,
   },
