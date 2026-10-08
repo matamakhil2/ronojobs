@@ -116,6 +116,16 @@ export default function JobDetailsScreen() {
     return 'Competitive compensation';
   };
 
+  const formatSalaryShort = () => {
+    if (job?.salary_min && job?.salary_max) {
+      return `$${(job.salary_min / 1000).toFixed(0)}k - $${(job.salary_max / 1000).toFixed(0)}k`;
+    }
+    if (job?.salary_min) {
+      return `From $${(job.salary_min / 1000).toFixed(0)}k`;
+    }
+    return 'Competitive';
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -158,7 +168,7 @@ export default function JobDetailsScreen() {
             <CompanyImage
               uri={job.company_logo}
               companyName={job.company_name}
-              size={54}
+              size={56}
               borderRadius={RADIUS.lg}
             />
 
@@ -166,33 +176,51 @@ export default function JobDetailsScreen() {
               <Text style={styles.companyName}>{job.company_name}</Text>
               <Text style={styles.jobTitle}>{job.title}</Text>
               <View style={styles.locationRow}>
-                <Ionicons name="location-outline" size={14} color={COLORS.textSecondary} />
+                <Ionicons name="location-sharp" size={14} color={COLORS.secondary} />
                 <Text style={styles.locationText}>{job.location}</Text>
               </View>
             </View>
           </View>
 
-          {/* Badges / Highlights */}
-          <View style={styles.badgeRow}>
-            <View style={styles.badge}>
-              <Ionicons name="briefcase-outline" size={14} color={COLORS.primary} />
-              <Text style={styles.badgeText}>{job.employment_type}</Text>
+          {/* Quick Metrics Strip mirroring Active Jobs brand colors */}
+          <View style={styles.highlightsGrid}>
+            <View style={[styles.highlightItem, { backgroundColor: COLORS.secondaryLight, borderColor: '#BAE6FD' }]}>
+              <View style={[styles.highlightIconBox, { backgroundColor: '#E0F2FE' }]}>
+                <Ionicons name="briefcase" size={15} color={COLORS.secondary} />
+              </View>
+              <Text style={[styles.highlightValue, { color: COLORS.secondary }]} numberOfLines={1}>
+                {job.employment_type || 'Full-time'}
+              </Text>
+              <Text style={styles.highlightLabel}>Work Type</Text>
             </View>
 
-            <View style={styles.badge}>
-              <Ionicons name="ribbon-outline" size={14} color={COLORS.purple} />
-              <Text style={[styles.badgeText, { color: COLORS.purple }]}>{job.experience_level}</Text>
+            <View style={[styles.highlightItem, { backgroundColor: COLORS.primaryLight, borderColor: '#DDD6FE' }]}>
+              <View style={[styles.highlightIconBox, { backgroundColor: '#F3E8FF' }]}>
+                <Ionicons name="ribbon" size={15} color={COLORS.primary} />
+              </View>
+              <Text style={[styles.highlightValue, { color: COLORS.primary }]} numberOfLines={1}>
+                {job.experience_level || 'Mid'} Level
+              </Text>
+              <Text style={styles.highlightLabel}>Experience</Text>
             </View>
 
-            <View style={styles.badge}>
-              <Ionicons name="cash-outline" size={14} color={COLORS.success} />
-              <Text style={[styles.badgeText, { color: COLORS.success }]}>{formatSalary()}</Text>
+            <View style={[styles.highlightItem, { backgroundColor: COLORS.accentLight, borderColor: '#FED7AA' }]}>
+              <View style={[styles.highlightIconBox, { backgroundColor: '#FFF7ED' }]}>
+                <Ionicons name="cash" size={15} color={COLORS.accent} />
+              </View>
+              <Text style={[styles.highlightValue, { color: COLORS.accent }]} numberOfLines={1}>
+                {formatSalaryShort()}
+              </Text>
+              <Text style={styles.highlightLabel}>Salary / Yr</Text>
             </View>
           </View>
 
           {job.application_status && (
             <View style={styles.statusRow}>
-              <Text style={styles.statusLabel}>Your Application Status:</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="checkmark-done-circle" size={16} color={COLORS.success} />
+                <Text style={styles.statusLabel}>Application Status:</Text>
+              </View>
               <StatusBadge status={job.application_status} />
             </View>
           )}
@@ -201,11 +229,16 @@ export default function JobDetailsScreen() {
         {/* Required Skills Section */}
         {job.skills && job.skills.length > 0 && (
           <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Required Skills</Text>
+            <View style={styles.sectionHeaderRow}>
+              <View style={[styles.sectionIconBox, { backgroundColor: COLORS.primaryLight }]}>
+                <Ionicons name="code-slash" size={16} color={COLORS.primary} />
+              </View>
+              <Text style={styles.sectionTitle}>Required Skills</Text>
+            </View>
             <View style={styles.skillsGrid}>
               {job.skills.map((skill, index) => (
                 <View key={index} style={styles.skillChip}>
-                  <Ionicons name="checkmark-circle" size={14} color={COLORS.primary} />
+                  <Ionicons name="checkmark-circle" size={14} color={COLORS.secondary} />
                   <Text style={styles.skillText}>{skill}</Text>
                 </View>
               ))}
@@ -215,17 +248,30 @@ export default function JobDetailsScreen() {
 
         {/* Job Description */}
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Job Description</Text>
+          <View style={styles.sectionHeaderRow}>
+            <View style={[styles.sectionIconBox, { backgroundColor: COLORS.secondaryLight }]}>
+              <Ionicons name="document-text" size={16} color={COLORS.secondary} />
+            </View>
+            <Text style={styles.sectionTitle}>Job Description</Text>
+          </View>
           <Text style={styles.bodyText}>{job.description}</Text>
         </View>
 
         {/* Company Overview */}
         {job.company_description && (
           <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>About {job.company_name}</Text>
+            <View style={styles.sectionHeaderRow}>
+              <View style={[styles.sectionIconBox, { backgroundColor: COLORS.accentLight }]}>
+                <Ionicons name="business" size={16} color={COLORS.accent} />
+              </View>
+              <Text style={styles.sectionTitle}>About {job.company_name}</Text>
+            </View>
             <Text style={styles.bodyText}>{job.company_description}</Text>
             {job.company_website && (
-              <Text style={styles.websiteText}>🌐 {job.company_website}</Text>
+              <View style={styles.websiteBox}>
+                <Ionicons name="globe-outline" size={15} color={COLORS.secondary} />
+                <Text style={styles.websiteText}>{job.company_website}</Text>
+              </View>
             )}
           </View>
         )}
@@ -262,7 +308,7 @@ export default function JobDetailsScreen() {
               <Ionicons
                 name={isSaved ? 'bookmark' : 'bookmark-outline'}
                 size={22}
-                color={isSaved ? COLORS.textInverse : COLORS.text}
+                color={isSaved ? COLORS.primary : COLORS.textSecondary}
               />
             </TouchableOpacity>
 
@@ -374,25 +420,53 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textSecondary,
   },
-  badgeRow: {
+  highlightsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 8,
-    marginTop: 4,
+    marginTop: SPACING.xs,
   },
-  badge: {
+  highlightItem: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  highlightIconBox: {
+    width: 28,
+    height: 28,
+    borderRadius: RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  highlightValue: {
+    fontSize: 12,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  highlightLabel: {
+    fontSize: 10,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+  },
+  sectionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: RADIUS.full,
-    gap: 6,
+    gap: 8,
+    marginBottom: SPACING.sm,
   },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.primary,
+  sectionIconBox: {
+    width: 28,
+    height: 28,
+    borderRadius: RADIUS.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statusRow: {
     flexDirection: 'row',
@@ -406,11 +480,11 @@ const styles = StyleSheet.create({
   statusLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: COLORS.text,
   },
   sectionCard: {
     backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.xl,
     padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -421,7 +495,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.sm,
   },
   skillsGrid: {
     flexDirection: 'row',
@@ -431,26 +504,38 @@ const styles = StyleSheet.create({
   skillChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
-    paddingVertical: 6,
+    backgroundColor: COLORS.surface,
+    paddingVertical: 7,
     paddingHorizontal: 12,
-    borderRadius: RADIUS.full,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     gap: 6,
   },
   skillText: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: COLORS.text,
   },
   bodyText: {
     fontSize: 14,
     color: COLORS.textSecondary,
     lineHeight: 22,
   },
+  websiteBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.secondaryLight,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: RADIUS.md,
+    marginTop: SPACING.sm,
+    alignSelf: 'flex-start',
+  },
   websiteText: {
     fontSize: 13,
-    color: COLORS.primary,
-    marginTop: 10,
+    color: COLORS.secondary,
     fontWeight: '600',
   },
   bottomBar: {
@@ -478,7 +563,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   saveActionBtnActive: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primaryLight,
     borderColor: COLORS.primary,
   },
   applyActionBtn: {
