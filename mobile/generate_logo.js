@@ -399,14 +399,8 @@ const adaptivePng = renderBadgeLogo(1024, {
   bgCanvas: null,
 });
 
-// 3. Splash screen icon: round white box with inner logo inside it!
-const splashPng = renderBadgeLogo(1024, {
-  boxScale: 0.58,
-  cornerRadius: 0.24,
-  logoScale: 0.65,
-  shadow: true,
-  bgCanvas: null,
-});
+// 3. Splash screen icon: pure clean logo on transparent background (no box, no shadow, no bg color)
+const splashPng = renderHighResLogo(1024, 0.22, null);
 
 // 4. App Store / Launcher icon: round white box with inner logo with safe margins
 const iconPng = renderBadgeLogo(1024, {

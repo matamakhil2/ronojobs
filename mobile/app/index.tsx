@@ -27,7 +27,7 @@ export default function SplashScreen() {
         {/* Top Brand Hero */}
         <View style={styles.heroSection}>
           <View style={styles.logoBadge}>
-            <AppLogo size={60} />
+            <AppLogo size={68} />
           </View>
 
           <Text style={styles.brandTitle}>
@@ -134,16 +134,9 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
   },
   logoBadge: {
-    width: 88,
-    height: 88,
-    borderRadius: 24,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.md,
-    ...SHADOWS.md,
   },
   brandTitle: {
     fontSize: 34,
