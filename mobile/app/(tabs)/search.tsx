@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,14 @@ export default function SearchScreen() {
   const roleLight = isEmployer ? COLORS.secondaryLight : COLORS.primaryLight;
 
   const searchParams = useLocalSearchParams<{ q?: string }>();
+  const searchScrollRef = useRef<ScrollView>(null);
+
+  // Auto-scroll to top whenever tab is clicked/focused
+  useFocusEffect(
+    useCallback(() => {
+      searchScrollRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
 
   const [filters, setFilters] = useState<JobFilters>({
     q: searchParams.q || '',
@@ -223,6 +231,7 @@ export default function SearchScreen() {
 
       {/* Job list */}
       <ScrollView
+        ref={searchScrollRef}
         contentContainerStyle={styles.resultsList}
         showsVerticalScrollIndicator={false}
         refreshControl={

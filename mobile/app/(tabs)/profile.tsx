@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
@@ -30,6 +30,15 @@ export default function ProfileScreen() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const profileScrollRef = useRef<ScrollView>(null);
+
+  // Auto-scroll to top whenever tab is clicked/focused
+  useFocusEffect(
+    useCallback(() => {
+      profileScrollRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
 
   // Candidate fields
   const [fullName, setFullName] = useState('');
@@ -142,7 +151,11 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        ref={profileScrollRef}
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Profile Card Header */}
         <View style={styles.profileCard}>
           <View style={styles.avatarRow}>

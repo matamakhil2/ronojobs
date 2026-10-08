@@ -28,8 +28,16 @@ export default function HomeScreen() {
   const isEmployer = user?.role === 'employer';
   const isCandidateLoggedIn = !!user && !isEmployer;
 
+  const mainScrollRef = useRef<ScrollView>(null);
   const sliderRef = useRef<ScrollView>(null);
   const [sliderScrollX, setSliderScrollX] = useState(0);
+
+  // Auto-scroll to top whenever tab is clicked/focused
+  useFocusEffect(
+    useCallback(() => {
+      mainScrollRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -311,6 +319,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
+        ref={mainScrollRef}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl

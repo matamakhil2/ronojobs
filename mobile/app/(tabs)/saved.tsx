@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -43,9 +43,12 @@ export default function SavedJobsScreen() {
     }
   }, [isAuthenticated, user?.role]);
 
+  const savedScrollRef = useRef<ScrollView>(null);
+
   useFocusEffect(
     useCallback(() => {
       fetchSaved();
+      savedScrollRef.current?.scrollTo({ y: 0, animated: false });
     }, [fetchSaved])
   );
 
@@ -113,6 +116,7 @@ export default function SavedJobsScreen() {
       </View>
 
       <ScrollView
+        ref={savedScrollRef}
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={

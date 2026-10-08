@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,8 @@ export default function ApplicationsScreen() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const appsScrollRef = useRef<ScrollView>(null);
 
   const isEmployer = user?.role === 'employer';
 
@@ -83,6 +85,7 @@ export default function ApplicationsScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchApplications();
+      appsScrollRef.current?.scrollTo({ y: 0, animated: false });
     }, [fetchApplications])
   );
 
@@ -137,6 +140,7 @@ export default function ApplicationsScreen() {
 
       {/* Applications list */}
       <ScrollView
+        ref={appsScrollRef}
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={
