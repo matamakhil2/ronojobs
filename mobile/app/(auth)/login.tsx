@@ -19,14 +19,13 @@ import { COLORS, RADIUS, SHADOWS, SPACING } from '../../src/constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, setDemoUser } = useAuth();
+  const { login } = useAuth();
 
   const [role, setRole] = useState<'candidate' | 'employer'>('candidate');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const activeColor = role === 'candidate' ? COLORS.primary : COLORS.secondary;
@@ -60,29 +59,7 @@ export default function LoginScreen() {
     }
   };
 
-  const handleAutofillDemo = () => {
-    if (role === 'candidate') {
-      setEmail('alex.dev@gmail.com');
-      setPassword('Candidate@123');
-    } else {
-      setEmail('recruiter@techcorp.com');
-      setPassword('Employer@123');
-    }
-    setErrorMessage(null);
-  };
 
-  const handleInstantDemoLogin = async () => {
-    setDemoLoading(true);
-    setErrorMessage(null);
-    try {
-      await setDemoUser(role);
-      router.replace('/(tabs)');
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Demo login failed.');
-    } finally {
-      setDemoLoading(false);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -208,7 +185,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               style={[styles.submitBtn, { backgroundColor: activeColor }, loading && styles.submitBtnDisabled]}
               onPress={handleLogin}
-              disabled={loading || demoLoading}
+              disabled={loading}
               activeOpacity={0.85}
             >
               {loading ? (
@@ -219,50 +196,6 @@ export default function LoginScreen() {
                 </Text>
               )}
             </TouchableOpacity>
-          </View>
-
-          {/* Quick Demo Card for Selected Role */}
-          <View style={styles.demoCard}>
-            <View style={styles.demoCardHeader}>
-              <View style={styles.demoBadge}>
-                <Ionicons name="flash" size={14} color={activeColor} />
-                <Text style={[styles.demoBadgeText, { color: activeColor }]}>
-                  {role === 'candidate' ? 'Candidate Demo' : 'Employer Demo'}
-                </Text>
-              </View>
-              <Text style={styles.demoCardSub}>Instant 1-Click Access</Text>
-            </View>
-
-            <View style={styles.demoButtonsRow}>
-              <TouchableOpacity
-                style={[styles.demoFillBtn, { borderColor: activeColor }]}
-                onPress={handleAutofillDemo}
-                activeOpacity={0.8}
-              >
-                <Ionicons name="create-outline" size={15} color={activeColor} />
-                <Text style={[styles.demoFillText, { color: activeColor }]}>
-                  Auto-Fill Credentials
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.demoInstantBtn, { backgroundColor: activeLight, borderColor: activeColor }]}
-                onPress={handleInstantDemoLogin}
-                disabled={demoLoading}
-                activeOpacity={0.8}
-              >
-                {demoLoading ? (
-                  <ActivityIndicator size="small" color={activeColor} />
-                ) : (
-                  <>
-                    <Ionicons name="log-in-outline" size={15} color={activeColor} />
-                    <Text style={[styles.demoInstantText, { color: activeColor }]}>
-                      1-Tap Demo Entry
-                    </Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            </View>
           </View>
 
           {/* Register Link */}
@@ -397,68 +330,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textInverse,
   },
-  demoCard: {
-    marginTop: SPACING.xl,
-    padding: SPACING.md,
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.sm,
-  },
-  demoCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  demoBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  demoBadgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  demoCardSub: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: '500',
-  },
-  demoButtonsRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  demoFillBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    backgroundColor: COLORS.surface,
-    gap: 6,
-  },
-  demoFillText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  demoInstantBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    gap: 6,
-  },
-  demoInstantText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
+
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
