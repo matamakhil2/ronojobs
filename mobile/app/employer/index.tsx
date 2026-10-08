@@ -120,16 +120,16 @@ export default function EmployerDashboardScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* Top Header */}
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <AppLogo size={38} />
+          <AppLogo size={36} />
           <View>
-            <Text style={styles.title}>Employer Hub 📊</Text>
-            <Text style={styles.subtitle}>
-              {(user?.profile as any)?.name || 'Company Hub'}
+            <Text style={styles.title}>
+              {(user?.profile as any)?.name || (user as any)?.companyName || 'Company Hub'}
             </Text>
+            <Text style={styles.subtitle}>Recruiter Operations</Text>
           </View>
         </View>
 

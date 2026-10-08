@@ -35,7 +35,7 @@ export default function RootLayout() {
             name="employer/index"
             options={{
               headerShown: true,
-              headerTitle: 'Employer Dashboard',
+              headerTitle: 'Employer Hub',
               headerTintColor: COLORS.text,
               headerStyle: { backgroundColor: COLORS.card },
               headerShadowVisible: false,

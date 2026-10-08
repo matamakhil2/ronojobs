@@ -78,23 +78,17 @@ export default function ApplicantsScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.text} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Job Context Banner */}
+        <View style={styles.jobBanner}>
+          <Text style={styles.jobBannerTitle} numberOfLines={1}>
             {jobTitle}
           </Text>
-          <Text style={styles.headerSubtitle}>
+          <Text style={styles.jobBannerSubtitle}>
             {applicants.length} Candidate Applicant{applicants.length === 1 ? '' : 's'}
           </Text>
         </View>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {loading ? (
           <ActivityIndicator size="large" color={COLORS.secondary} style={{ marginTop: 40 }} />
         ) : applicants.length === 0 ? (
@@ -232,29 +226,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    gap: 12,
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: RADIUS.full,
+  jobBanner: {
     backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+    ...SHADOWS.sm,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '800',
+  jobBannerTitle: {
+    fontSize: 16,
+    fontWeight: '700',
     color: COLORS.text,
   },
-  headerSubtitle: {
+  jobBannerSubtitle: {
     fontSize: 12,
     color: COLORS.textSecondary,
     marginTop: 2,
