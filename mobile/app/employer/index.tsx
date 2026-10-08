@@ -123,21 +123,22 @@ export default function EmployerDashboardScreen() {
     <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* Top Header */}
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <AppLogo size={36} />
-          <View>
-            <Text style={styles.title}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, marginRight: 12 }}>
+          <AppLogo size={34} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
               {(user?.profile as any)?.name || (user as any)?.companyName || 'Company Hub'}
             </Text>
-            <Text style={styles.subtitle}>Recruiter Operations</Text>
+            <Text style={styles.subtitle} numberOfLines={1}>Recruiter Operations</Text>
           </View>
         </View>
 
         <TouchableOpacity
           style={styles.postBtn}
           onPress={() => router.push('/employer/post-job')}
+          activeOpacity={0.85}
         >
-          <Ionicons name="add" size={18} color={COLORS.textInverse} />
+          <Ionicons name="add" size={16} color={COLORS.textInverse} />
           <Text style={styles.postBtnText}>Post Job</Text>
         </TouchableOpacity>
       </View>
@@ -421,12 +422,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '700',
     color: COLORS.text,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.textSecondary,
     marginTop: 2,
   },
@@ -434,10 +435,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.secondary,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
     borderRadius: RADIUS.md,
     gap: 4,
+    flexShrink: 0,
     ...SHADOWS.sm,
   },
   postBtnText: {
