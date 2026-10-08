@@ -125,10 +125,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
+    paddingVertical: SPACING.lg,
   },
   heroSection: {
     alignItems: 'center',
@@ -198,7 +197,8 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
-    marginVertical: SPACING.lg,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.lg,
     ...SHADOWS.sm,
   },
   metricsHeader: {
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     gap: 10,
-    marginTop: 'auto',
+    marginTop: 0,
   },
   primaryBtn: {
     flexDirection: 'row',
