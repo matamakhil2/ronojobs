@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
 import { jobsApi, employerApi } from '../../src/services/api';
-import { Job } from '../../src/types';
+import { Job, CandidateProfile } from '../../src/types';
 import { JobCard } from '../../src/components/JobCard';
 import { CategoryChip } from '../../src/components/CategoryChip';
 import { AppLogo } from '../../src/components/AppLogo';
@@ -24,6 +24,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const isEmployer = user?.role === 'employer';
+  const isCandidateLoggedIn = !!user && !isEmployer;
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,6 +177,57 @@ export default function HomeScreen() {
     }
     return list;
   }, [employerJobs, searchQuery]);
+
+  // Derive "Jobs You Might Like" from existing fetched jobs (Candidate logged in)
+  const jobsYouMightLike = useMemo(() => {
+    if (!isCandidateLoggedIn || jobs.length === 0) return [];
+
+    const candidateProfile = user?.profile as CandidateProfile | undefined;
+    const candidateSkills = (candidateProfile?.skills || []).map((s) => s.toLowerCase().trim()).filter(Boolean);
+    const candidateHeadline = candidateProfile?.headline?.toLowerCase().trim() || '';
+    const candidateLocation = candidateProfile?.location?.toLowerCase().trim() || '';
+
+    if (candidateSkills.length > 0 || candidateHeadline || candidateLocation) {
+      const matched = jobs.filter((job) => {
+        // 1. Skill overlap
+        if (Array.isArray(job.skills) && candidateSkills.length > 0) {
+          const hasSkill = job.skills.some((js) => {
+            const lowerJs = js.toLowerCase();
+            return candidateSkills.some((cs) => lowerJs.includes(cs) || cs.includes(lowerJs));
+          });
+          if (hasSkill) return true;
+        }
+
+        // 2. Role / title match with candidate headline
+        if (candidateHeadline) {
+          const title = job.title?.toLowerCase() || '';
+          const category = job.category?.toLowerCase() || '';
+          const headlineWords = candidateHeadline.split(/\s+/).filter((w) => w.length > 3);
+          const hasTitleMatch = headlineWords.some((w) => title.includes(w));
+          if (hasTitleMatch || (category && candidateHeadline.includes(category))) {
+            return true;
+          }
+        }
+
+        // 3. Location match (or Remote)
+        if (candidateLocation && job.location) {
+          const jobLoc = job.location.toLowerCase();
+          if (jobLoc.includes(candidateLocation) || candidateLocation.includes(jobLoc)) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+
+      if (matched.length > 0) {
+        return matched.slice(0, 3);
+      }
+    }
+
+    // Fallback: select a reasonable subset from existing jobs
+    return jobs.slice(0, 3);
+  }, [jobs, isCandidateLoggedIn, user]);
 
   const handleToggleSave = async (jobId: string, currentlySaved?: boolean) => {
     // Optimistic UI update
@@ -560,6 +612,33 @@ export default function HomeScreen() {
               </ScrollView>
             </View>
 
+            {/* Jobs You Might Like Section (Candidate Logged In) */}
+            {isCandidateLoggedIn && !searchQuery.trim() && jobsYouMightLike.length > 0 && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeaderRow}>
+                  <View>
+                    <Text style={styles.sectionTitle}>Jobs You Might Like ✨</Text>
+                    <Text style={styles.sectionSubtitle}>
+                      Curated roles based on your profile & skills
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={() => router.push('/(tabs)/search')}>
+                    <Text style={styles.viewAllLink}>View All</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {jobsYouMightLike.map((job) => (
+                  <JobCard
+                    key={`might-like-${job.id}`}
+                    job={job}
+                    onPress={() => router.push(`/job/${job.id}`)}
+                    onSaveToggle={() => handleToggleSave(job.id, job.is_saved)}
+                    isSaved={job.is_saved}
+                  />
+                ))}
+              </View>
+            )}
+
             {/* Featured / Recent Jobs List */}
             <View style={styles.section}>
               <View style={styles.sectionHeaderRow}>
@@ -884,6 +963,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.text,
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 2,
   },
   jobCountText: {
     fontSize: 13,
