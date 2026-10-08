@@ -453,22 +453,31 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Employer Action Banner */}
-            <View style={styles.employerBanner}>
+            {/* Employer Hub Card Box */}
+            <TouchableOpacity
+              style={styles.employerHubCard}
+              onPress={() => router.push('/employer')}
+              activeOpacity={0.88}
+            >
+              <View style={styles.employerHubIconContainer}>
+                <Ionicons name="bar-chart" size={22} color={COLORS.secondary} />
+              </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.employerBannerTitle}>Hiring Top Talent?</Text>
-                <Text style={styles.employerBannerSubtitle}>
-                  Publish high-impact roles, review candidate resumes, and schedule interviews.
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={styles.employerHubTitle}>Employer Hub</Text>
+                  <View style={styles.employerHubBadge}>
+                    <Text style={styles.employerHubBadgeText}>Full Panel</Text>
+                  </View>
+                </View>
+                <Text style={styles.employerHubSubtitle}>
+                  Track candidate applicants, review analytics, and manage hiring workflows.
                 </Text>
               </View>
-              <TouchableOpacity
-                style={styles.postJobBtn}
-                onPress={() => router.push('/employer/post-job')}
-              >
-                <Ionicons name="add" size={18} color={COLORS.textInverse} />
-                <Text style={styles.postJobBtnText}>+ Post Role</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={styles.employerHubLinkBtn}>
+                <Text style={styles.employerHubLinkText}>Hub</Text>
+                <Ionicons name="arrow-forward" size={14} color={COLORS.textInverse} />
+              </View>
+            </TouchableOpacity>
 
             {/* Employer Postings Section */}
             <View style={styles.section}>
@@ -1123,38 +1132,62 @@ const styles = StyleSheet.create({
   categoryScroll: {
     paddingVertical: 6,
   },
-  employerBanner: {
+  employerHubCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.secondaryLight,
+    backgroundColor: '#F0F9FF',
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: '#BAE6FD',
     gap: 12,
+    ...SHADOWS.sm,
   },
-  employerBannerTitle: {
+  employerHubIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.md,
+    backgroundColor: '#E0F2FE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+  },
+  employerHubTitle: {
     fontSize: 15,
     fontWeight: '700',
     color: COLORS.secondary,
   },
-  employerBannerSubtitle: {
+  employerHubBadge: {
+    backgroundColor: '#E0F2FE',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+  },
+  employerHubBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: COLORS.secondary,
+  },
+  employerHubSubtitle: {
     fontSize: 12,
     color: COLORS.textSecondary,
     marginTop: 2,
     lineHeight: 16,
   },
-  postJobBtn: {
+  employerHubLinkBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.secondary,
     paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     borderRadius: RADIUS.md,
     gap: 4,
   },
-  postJobBtnText: {
+  employerHubLinkText: {
     fontSize: 13,
     fontWeight: '700',
     color: COLORS.textInverse,
