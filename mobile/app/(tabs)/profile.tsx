@@ -50,25 +50,25 @@ export default function ProfileScreen() {
   const [companyDesc, setCompanyDesc] = useState('');
 
   useEffect(() => {
-    if (user?.profile) {
+    if (user) {
       if (isCandidate) {
-        const cp = user.profile as CandidateProfile;
-        setFullName(cp.full_name || '');
-        setPhone(cp.phone || '');
-        setLocation(cp.location || '');
-        setHeadline(cp.headline || '');
-        setBio(cp.bio || '');
-        setExperienceYears(String(cp.experience_years || 0));
-        setEducation(cp.education || '');
-        setResumeUrl(cp.resume_url || '');
-        setSkillsStr(Array.isArray(cp.skills) ? cp.skills.join(', ') : '');
+        const cp = user.profile as CandidateProfile | undefined;
+        setFullName(cp?.full_name || (user as any)?.fullName || (user as any)?.name || '');
+        setPhone(cp?.phone || '');
+        setLocation(cp?.location || '');
+        setHeadline(cp?.headline || '');
+        setBio(cp?.bio || '');
+        setExperienceYears(String(cp?.experience_years || 0));
+        setEducation(cp?.education || '');
+        setResumeUrl(cp?.resume_url || '');
+        setSkillsStr(Array.isArray(cp?.skills) ? cp.skills.join(', ') : '');
       } else if (isEmployer) {
-        const comp = user.profile as CompanyProfile;
-        setCompanyName(comp.name || '');
-        setCompanyWebsite(comp.website || '');
-        setCompanyLocation(comp.location || '');
-        setCompanyIndustry(comp.industry || '');
-        setCompanyDesc(comp.description || '');
+        const comp = user.profile as CompanyProfile | undefined;
+        setCompanyName(comp?.name || (user as any)?.companyName || (user as any)?.name || '');
+        setCompanyWebsite(comp?.website || '');
+        setCompanyLocation(comp?.location || '');
+        setCompanyIndustry(comp?.industry || '');
+        setCompanyDesc(comp?.description || '');
       }
     }
   }, [user, isCandidate, isEmployer]);
@@ -161,7 +161,9 @@ export default function ProfileScreen() {
 
             <View style={styles.avatarMeta}>
               <Text style={styles.profileName}>
-                {isCandidate ? fullName || 'Candidate' : companyName || 'Company'}
+                {isCandidate
+                  ? fullName || (user?.profile as any)?.full_name || (user as any)?.fullName || (user?.email ? user.email.split('@')[0] : 'Candidate')
+                  : companyName || (user?.profile as any)?.name || (user as any)?.companyName || 'Company'}
               </Text>
               <Text style={styles.profileEmail}>{user?.email}</Text>
               <View style={[styles.roleBadge, { backgroundColor: roleLight }]}>

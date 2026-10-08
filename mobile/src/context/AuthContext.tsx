@@ -36,7 +36,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setToken(storedToken);
           try {
             const res = await authApi.getMe();
-            setUser(res.user);
+            if (res.user) {
+              const candidateName =
+                (res.user.profile as any)?.full_name ||
+                (res.user as any)?.fullName ||
+                res.user.email?.split('@')[0] ||
+                'Candidate';
+              const companyName =
+                (res.user.profile as any)?.name ||
+                (res.user as any)?.companyName ||
+                'My Company';
+
+              setUser({
+                ...res.user,
+                profile: res.user.profile || (res.user.role === 'candidate'
+                  ? ({ user_id: res.user.id, full_name: candidateName, skills: [] } as CandidateProfile)
+                  : ({ user_id: res.user.id, name: companyName } as CompanyProfile)),
+              });
+            }
           } catch (e) {
             console.warn('Token validation failed, falling back to guest/demo mode');
             await removeStoredToken();
@@ -59,7 +76,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authApi.login(email, password);
       await setStoredToken(res.token);
       setToken(res.token);
-      setUser(res.user);
+
+      const candidateName =
+        (res.user?.profile as any)?.full_name ||
+        (res.user as any)?.fullName ||
+        email.split('@')[0] ||
+        'Candidate';
+      const companyName =
+        (res.user?.profile as any)?.name ||
+        (res.user as any)?.companyName ||
+        'My Company';
+
+      const userWithProfile: User = {
+        ...res.user,
+        profile: res.user.profile || (res.user.role === 'candidate'
+          ? ({ user_id: res.user.id, full_name: candidateName, skills: [] } as CandidateProfile)
+          : ({ user_id: res.user.id, name: companyName } as CompanyProfile)),
+      };
+      setUser(userWithProfile);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +111,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authApi.register(payload);
       await setStoredToken(res.token);
       setToken(res.token);
-      setUser(res.user);
+
+      const candidateName =
+        payload.fullName?.trim() ||
+        (res.user?.profile as any)?.full_name ||
+        (res.user as any)?.fullName ||
+        payload.email.split('@')[0] ||
+        'Candidate';
+      const companyName =
+        payload.companyName?.trim() ||
+        (res.user?.profile as any)?.name ||
+        (res.user as any)?.companyName ||
+        'My Company';
+
+      const userWithProfile: User = {
+        ...res.user,
+        profile: res.user.profile || (res.user.role === 'candidate'
+          ? ({ user_id: res.user.id, full_name: candidateName, skills: [] } as CandidateProfile)
+          : ({ user_id: res.user.id, name: companyName } as CompanyProfile)),
+      };
+      setUser(userWithProfile);
     } finally {
       setIsLoading(false);
     }

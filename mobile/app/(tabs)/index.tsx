@@ -329,8 +329,8 @@ export default function HomeScreen() {
               <Text style={styles.greeting} numberOfLines={1}>
                 {user ? (
                   isEmployer
-                    ? `Welcome back, ${(user.profile as any)?.name || 'Employer'} 🏢`
-                    : `Hello, ${(user.profile as any)?.full_name || 'Candidate'} 👋`
+                    ? `Welcome back, ${(user.profile as any)?.name || (user as any)?.companyName || (user.email ? user.email.split('@')[0] : 'Employer')} 🏢`
+                    : `Hello, ${(user.profile as any)?.full_name || (user as any)?.fullName || (user as any)?.name || (user.email ? user.email.split('@')[0] : 'Candidate')} 👋`
                 ) : (
                   'Welcome to RonoJobs 👋'
                 )}
